@@ -1,0 +1,2 @@
+freq_selection.c:33:6:HAL_TIM_PeriodElapsedCallback	16	static
+freq_selection.c:47:6:HAL_GPIO_EXTI_Callback	16	static
