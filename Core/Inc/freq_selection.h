@@ -10,8 +10,10 @@
 
 typedef struct
 {
-	const int Freq_1;
-	const int Freq_2;
+	const unsigned int Freq_1;
+	const unsigned int Freq_2;
 }CasesTypeDef;
+
+void Init_Freq(void);
 
 #endif /* INC_FREQ_SELECTION_H_ */
