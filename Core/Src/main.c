@@ -21,6 +21,7 @@
 #include "main.h"
 #include "i2c.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -32,6 +33,8 @@
 #include "OLED_display_state.h"
 #include "stdio.h"
 #include <stdbool.h>
+#include <string.h>
+#include "frequency_calibration.h"
 
 /* USER CODE END Includes */
 
@@ -80,8 +83,6 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
-
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -105,8 +106,16 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_I2C3_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
+
+  char GUI_message[200] = {0};
+
+  snprintf(GUI_message, 200, "System Clock = %lu\n",  SystemCoreClock);
+  HAL_UART_Transmit(&huart2, (unsigned char*)GUI_message, strlen(GUI_message), 100);
+
+  InitCalibrationEEPROM();
   Init_Freq();
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim3);
@@ -115,7 +124,6 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
 
   ssd1306_Init();
 
@@ -127,13 +135,16 @@ int main(void)
   ssd1306_SetCursor(0, 30);
   ssd1306_WriteString("   Technologies", Font_7x10, White);
   ssd1306_UpdateScreen();
-  HAL_Delay(2000);
+  HAL_Delay(500);
 
- //char string1[20] = {0};  //debug only
- //	snprintf(string1, 3, "%d", OLEDDisplayState);
- //	ssd1306_SetCursor(0, 0);
- //	ssd1306_WriteString(string1, Font_7x10, White);
- //	ssd1306_UpdateScreen();
+//	SystemCoreClockUpdate(); // Updates SystemCoreClock according to register settings. This function must be called if clock settings has been changed. Be aware that a value stored to SystemCoreClock during low level initialisation (i.e. SystemInit()) might get overwritten by C library startup code and/or .bss section initialization. Thus its highly recommended to call SystemCoreClockUpdate at the beginning of the user main() routine.
+//	SysTick_Config(SystemCoreClock/1000); // SystemCoreClock - global variable that contains the system frequency. Configure SysTick to generate an interrupt timing (it will produce the same interval for any clock speed). SysTick can be used for timing if it is not used for operating system.  /1000 gives SysTick every 1ms, /100 gives SysTick every 10 ms
+
+
+
+
+
+
 
   while (1)
   {
@@ -144,6 +155,8 @@ int main(void)
     {
         update_OLED_display(OLEDDisplayState);
     }
+
+
 
 
     /* USER CODE END WHILE */
@@ -192,7 +205,8 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C3;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_I2C3;
+  PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInit.I2c3ClockSelection = RCC_I2C3CLKSOURCE_PCLK1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {

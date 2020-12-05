@@ -54,25 +54,51 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if(GPIO_Pin == GPIO_PIN_2)	// next case button pressed
+
+
+
+ //   HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+
+	if(GPIO_Pin == GPIO_PIN_6)	// next case button pressed
 	{
 		CurrentCase++;
 		if(CurrentCase > 6)
 			CurrentCase = 6;
+
+		OLEDDisplayState = CurrentCase;
+		OLEDupToDate = false;
+
+	    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+	    for(int i = 0; i < 100; i++);
+	    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
 	}
 
-	if(GPIO_Pin == GPIO_PIN_3)	// previous case down button pressed
+
+
+	if(GPIO_Pin == GPIO_PIN_8)	// previous case down button pressed
 	{
 		CurrentCase--;
 		if(CurrentCase < 0)
 			CurrentCase = 0;
+
+		OLEDDisplayState = CurrentCase;
+		OLEDupToDate = false;
+
+	    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+	    for(int i = 0; i < 100; i++);
+	    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
 	}
 
-	OLEDDisplayState = CurrentCase;
-	OLEDupToDate = false;
+	if(GPIO_Pin == GPIO_PIN_13)	// user blue button - debbuging only
+	{
+	    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+	    for(int i = 0; i < 100; i++);
+	    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+	}
+
+
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin); // clear interrupt manually again (it is done already in library function before this callback function but interrupt can occur again when this function is running).
 }
-
 
 
 
