@@ -1,2 +1,3 @@
-frequency_calibration.c:16:6:InitCalibrationEEPROM	4	static
-frequency_calibration.c:24:6:SaveCalibrationInEEPROM	16	static
+frequency_calibration.c:30:6:InitCalibrationEEPROM	4	static
+frequency_calibration.c:38:6:SaveCalibrationInEEPROM	16	static
+frequency_calibration.c:46:6:CalibrationModeFromISR	24	static

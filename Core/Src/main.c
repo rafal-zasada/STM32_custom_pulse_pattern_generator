@@ -56,11 +56,13 @@
 
 /* USER CODE BEGIN PV */
 
+ char GUI_message[200] = {0};
   extern int CurrentCase;
-  extern CasesTypeDef CasesSet1[7];
+  extern CasesTypeDef CalibratedCasesSet1[7];
   extern int CurrentFrequency;
   extern OLEDStates_type OLEDDisplayState;
   extern bool OLEDupToDate;
+  extern float CalibrationFactor;
 
 /* USER CODE END PV */
 
@@ -110,7 +112,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 
-  char GUI_message[200] = {0};
+
 
   snprintf(GUI_message, 200, "System Clock = %lu\n",  SystemCoreClock);
   HAL_UART_Transmit(&huart2, (unsigned char*)GUI_message, strlen(GUI_message), 100);
@@ -142,21 +144,19 @@ int main(void)
 
 
 
-
-
-
-
   while (1)
   {
     HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    HAL_Delay(300);
+    HAL_Delay(100);
+ //   for(int i = 0; i < 10000000; i++);  // 10000000 about 1.4s with 80MHz clock
 
     if(OLEDupToDate != true)
     {
         update_OLED_display(OLEDDisplayState);
     }
 
-
+	snprintf(GUI_message, 40, "Calibration Factor = %f\n", CalibrationFactor);
+	HAL_UART_Transmit(&huart2, (unsigned char*)GUI_message, strlen(GUI_message) + 1, 100);
 
 
     /* USER CODE END WHILE */

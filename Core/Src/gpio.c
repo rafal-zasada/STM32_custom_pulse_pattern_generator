@@ -20,7 +20,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
 /* USER CODE BEGIN 0 */
-
+#include "freq_selection.h"
+#include "frequency_calibration.h"
 /* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
@@ -127,6 +128,28 @@ void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 2 */
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if(GPIO_Pin == GPIO_PIN_6)	// next case button pressed
+	{
+		FreqCaseUpFromISR();
+	}
+
+	if(GPIO_Pin == GPIO_PIN_8)	// previous case down button pressed
+	{
+		FreqCaseDownFromISR();
+	}
+
+	if(GPIO_Pin == GPIO_PIN_13)	// user blue button - temporary for calibration
+	{
+		CalibrationModeFromISR();
+		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);	// because function above is using the same pins
+		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
+	}
+
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin); // clear interrupt manually again (it is done already in library function before this callback function but interrupt can occur again when this function is running).
+}
 
 /* USER CODE END 2 */
 

@@ -10,5 +10,6 @@
 
 void InitCalibrationEEPROM(void);
 void SaveCalibrationInEEPROM(uint64_t Data);
+void CalibrationModeFromISR(void);
 
 #endif /* INC_FREQUENCY_CALIBRATION_H_ */

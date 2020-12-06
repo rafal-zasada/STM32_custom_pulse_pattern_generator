@@ -28,7 +28,8 @@ Core/Src/gpio.o: ../Core/Src/gpio.c ../Core/Inc/gpio.h ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
- ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
+ ../Core/Inc/freq_selection.h ../Core/Inc/frequency_calibration.h
 
 ../Core/Inc/gpio.h:
 
@@ -93,3 +94,7 @@ Core/Src/gpio.o: ../Core/Src/gpio.c ../Core/Inc/gpio.h ../Core/Inc/main.h \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
+
+../Core/Inc/freq_selection.h:
+
+../Core/Inc/frequency_calibration.h:

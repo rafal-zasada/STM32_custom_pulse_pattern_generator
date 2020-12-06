@@ -48,7 +48,7 @@ all: PWM_separate_files.elf secondary-outputs
 
 # Tool invocations
 PWM_separate_files.elf: $(OBJS) $(USER_OBJS) C:\Users\Raf\STM32CubeIDE\workspace_1.4.0\PWM_separate_files\STM32L476RGTX_FLASH.ld
-	arm-none-eabi-gcc -o "PWM_separate_files.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Raf\STM32CubeIDE\workspace_1.4.0\PWM_separate_files\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="PWM_separate_files.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "PWM_separate_files.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Raf\STM32CubeIDE\workspace_1.4.0\PWM_separate_files\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="PWM_separate_files.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

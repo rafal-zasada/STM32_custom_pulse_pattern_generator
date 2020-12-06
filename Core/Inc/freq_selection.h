@@ -10,10 +10,14 @@
 
 typedef struct
 {
-	const unsigned int Freq_1;
-	const unsigned int Freq_2;
+	unsigned int Freq_1;
+	unsigned int Freq_2;
 }CasesTypeDef;
 
+void ApplyCalFactor(void);
 void Init_Freq(void);
+void FreqCaseUpFromISR(void);
+void FreqCaseDownFromISR(void);
+
 
 #endif /* INC_FREQ_SELECTION_H_ */
