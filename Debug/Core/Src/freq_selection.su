@@ -1,5 +1,5 @@
 freq_selection.c:45:6:ApplyCalFactor	16	static
-freq_selection.c:56:6:Init_Freq	8	static
-freq_selection.c:67:6:HAL_TIM_PeriodElapsedCallback	16	static
-freq_selection.c:84:6:FreqCaseUpFromISR	16	static
-freq_selection.c:98:6:FreqCaseDownFromISR	16	static
+freq_selection.c:56:6:InitFrequency	8	static
+freq_selection.c:66:6:HAL_TIM_PeriodElapsedCallback	16	static
+freq_selection.c:83:6:FreqCaseUpFromISR	16	static
+freq_selection.c:97:6:FreqCaseDownFromISR	16	static

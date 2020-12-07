@@ -17,7 +17,7 @@ int Freq_1;
 int Freq_2;
 int CurrentCase;
 int CurrentFrequency;
-float CalibrationFactor = 1;
+float CalibrationFactor;
 extern OLEDStates_type OLEDDisplayState;
 extern bool OLEDupToDate;
 extern TIM_HandleTypeDef htim3;
@@ -53,10 +53,9 @@ void ApplyCalFactor(void)
 }
 
 
-void Init_Freq(void)
+void InitFrequency(void)
 {
 	ApplyCalFactor();
-
 	//Initialise to Case1 and Freq1
 	CurrentCase = 0; // array index - actual Case is + 1
 	CurrentFrequency = CalibratedCasesSet1[CurrentCase].Freq_1;

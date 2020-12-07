@@ -56,13 +56,14 @@
 
 /* USER CODE BEGIN PV */
 
- char GUI_message[200] = {0};
+ char PC_GUI_message[200] = {0};
   extern int CurrentCase;
   extern CasesTypeDef CalibratedCasesSet1[7];
   extern int CurrentFrequency;
   extern OLEDStates_type OLEDDisplayState;
   extern bool OLEDupToDate;
   extern float CalibrationFactor;
+  extern bool CalibrationModeFlag;
 
 /* USER CODE END PV */
 
@@ -114,11 +115,12 @@ int main(void)
 
 
 
-  snprintf(GUI_message, 200, "System Clock = %lu\n",  SystemCoreClock);
-  HAL_UART_Transmit(&huart2, (unsigned char*)GUI_message, strlen(GUI_message), 100);
+  snprintf(PC_GUI_message, 200, "System Clock = %lu\n",  SystemCoreClock);
+  HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message), 100);
 
-  InitCalibrationEEPROM();
-  Init_Freq();
+  InitCalibrationDataInFlash();
+  ReadCalibrationDataFromFlash(&CalibrationFactor);
+  InitFrequency();
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim3);
 
@@ -132,12 +134,17 @@ int main(void)
   HAL_Delay(300);
 
   ssd1306_Fill(Black);
-  ssd1306_SetCursor(0, 4);
-  ssd1306_WriteString("    TMD", Font_11x18, White);
-  ssd1306_SetCursor(0, 30);
+  ssd1306_SetCursor(0, 0);
+  ssd1306_WriteString("       TMD", Font_7x10, White);
+  ssd1306_SetCursor(0, 10);
   ssd1306_WriteString("   Technologies", Font_7x10, White);
+  ssd1306_SetCursor(0, 24);
+  ssd1306_WriteString("  PATTERN", Font_11x18, White);
+  ssd1306_SetCursor(0, 44);
+  ssd1306_WriteString(" GENERATOR", Font_11x18, White);
+
   ssd1306_UpdateScreen();
-  HAL_Delay(500);
+  HAL_Delay(3000);
 
 //	SystemCoreClockUpdate(); // Updates SystemCoreClock according to register settings. This function must be called if clock settings has been changed. Be aware that a value stored to SystemCoreClock during low level initialisation (i.e. SystemInit()) might get overwritten by C library startup code and/or .bss section initialization. Thus its highly recommended to call SystemCoreClockUpdate at the beginning of the user main() routine.
 //	SysTick_Config(SystemCoreClock/1000); // SystemCoreClock - global variable that contains the system frequency. Configure SysTick to generate an interrupt timing (it will produce the same interval for any clock speed). SysTick can be used for timing if it is not used for operating system.  /1000 gives SysTick every 1ms, /100 gives SysTick every 10 ms
@@ -147,16 +154,26 @@ int main(void)
   while (1)
   {
     HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    HAL_Delay(100);
+    HAL_Delay(300);
  //   for(int i = 0; i < 10000000; i++);  // 10000000 about 1.4s with 80MHz clock
 
-    if(OLEDupToDate != true)
+    if(OLEDupToDate != true)  // disabled due to problems with interrupt
     {
         update_OLED_display(OLEDDisplayState);
+        update_OLED_display(OLEDDisplayState); // second time due to problems with interrupts
     }
 
-	snprintf(GUI_message, 40, "Calibration Factor = %f\n", CalibrationFactor);
-	HAL_UART_Transmit(&huart2, (unsigned char*)GUI_message, strlen(GUI_message) + 1, 100);
+    if(CalibrationModeFlag)
+    {
+    	CalibrationMode();
+    }
+
+
+	snprintf(PC_GUI_message, 40, "Calibration Factor = %f\n", CalibrationFactor);
+	HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message) + 1, 100);
+
+	snprintf(PC_GUI_message, 40, "sizeof double = %u\n", sizeof(double));
+	HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message) + 1, 100);
 
 
     /* USER CODE END WHILE */

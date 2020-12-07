@@ -1,3 +1,5 @@
-frequency_calibration.c:30:6:InitCalibrationEEPROM	4	static
-frequency_calibration.c:38:6:SaveCalibrationInEEPROM	16	static
-frequency_calibration.c:46:6:CalibrationModeFromISR	24	static
+frequency_calibration.c:31:6:InitCalibrationDataInFlash	4	static
+frequency_calibration.c:39:6:SaveCalibrationFactorInFlash	16	static
+frequency_calibration.c:47:13:UpdateCalibrationDisplay	24	static
+frequency_calibration.c:62:6:CalibrationMode	40	static
+frequency_calibration.c:134:6:ReadCalibrationDataFromFlash	24	static

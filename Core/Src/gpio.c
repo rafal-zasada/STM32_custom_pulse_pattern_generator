@@ -22,13 +22,14 @@
 /* USER CODE BEGIN 0 */
 #include "freq_selection.h"
 #include "frequency_calibration.h"
+#include <stdbool.h>
 /* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
 /* Configure GPIO                                                             */
 /*----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
-
+  extern bool CalibrationModeFlag;
 /* USER CODE END 1 */
 
 /** Configure pins as
@@ -143,9 +144,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	if(GPIO_Pin == GPIO_PIN_13)	// user blue button - temporary for calibration
 	{
-		CalibrationModeFromISR();
-		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);	// because function above is using the same pins
-		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
+		CalibrationModeFlag = true;
 	}
 
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin); // clear interrupt manually again (it is done already in library function before this callback function but interrupt can occur again when this function is running).

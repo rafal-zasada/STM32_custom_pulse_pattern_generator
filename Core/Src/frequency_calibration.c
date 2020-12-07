@@ -13,21 +13,22 @@
 #include "stdio.h"
 #include <stdbool.h>
 #include <string.h>
+#include "ssd1306.h"
 
-
-extern char GUI_message[200];
+uint32_t PAGEError = 0;					// error will be saved here
+static FLASH_EraseInitTypeDef EraseInitStruct;
+static uint32_t CalibrationFactorInFlashAddress = 0x080FF800;	// use last sector of STM32L476RG for EEPROM emulation
+static uint32_t *ptrCalibrationFactorInFlashAddress = (uint32_t*)0x080FF800;
+char string_buffer[20] = {0};
+extern char PC_GUI_message[200];
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern float CalibrationFactor;
 extern UART_HandleTypeDef huart2;
+extern bool OLEDupToDate;
+bool CalibrationModeFlag;
 
-
-	uint32_t PAGEError = 0;	// error will be saved here
-	static FLASH_EraseInitTypeDef EraseInitStruct;
-	static uint32_t Address = 0x080FF800;	// use last sector of STM32L476RG for EEPROM emulation
-//	uint64_t Data = 0; // type?
-
-void InitCalibrationEEPROM(void)	// needed only for erase before write to EEPROM
+void InitCalibrationDataInFlash(void)	// initialisation needed only for erase function before write to EEPROM
 {
 	EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
 	EraseInitStruct.Banks       = FLASH_BANK_2;
@@ -35,19 +36,38 @@ void InitCalibrationEEPROM(void)	// needed only for erase before write to EEPROM
 	EraseInitStruct.NbPages     = 1;
 }
 
-void SaveCalibrationInEEPROM(uint64_t Data)
+void SaveCalibrationFactorInFlash(uint64_t Data)
 {
 	HAL_FLASH_Unlock();
 	HAL_FLASHEx_Erase(&EraseInitStruct, &PAGEError);
-	HAL_FLASH_Program (FLASH_TYPEPROGRAM_DOUBLEWORD, Address, Data);
+	HAL_FLASH_Program (FLASH_TYPEPROGRAM_DOUBLEWORD, CalibrationFactorInFlashAddress, Data);
 	HAL_FLASH_Lock();
 }
 
-void CalibrationModeFromISR(void)
+static void UpdateCalibrationDisplay(void)
 {
+	ssd1306_Fill(Black);
+	ssd1306_SetCursor(0, 0);
+	ssd1306_WriteString("CALIBRATION MODE:", Font_7x10, White);
+	ssd1306_SetCursor(0, 14);
+	ssd1306_WriteString("ADJUST OUTPUT TO", Font_7x10, White);
+	ssd1306_SetCursor(0, 28);
+	ssd1306_WriteString("10 KHZ WITH TOGGLE", Font_7x10, White);
+	ssd1306_SetCursor(0, 44);
+	snprintf(string_buffer, 12, "CF= %.4f", CalibrationFactor);
+	ssd1306_WriteString(string_buffer, Font_11x18, White);
+	ssd1306_UpdateScreen();
+}
+
+void CalibrationMode(void)
+{
+	float InitialCalibrationFactor = CalibrationFactor;
 	bool Previous_Pin6_State = 1;
 	bool Previous_Pin8_State = 1;
 
+	for(int i = 0; i < 1000000; i++); // about 140 ms
+	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
+	UpdateCalibrationDisplay();
 	HAL_TIM_Base_Stop_IT(&htim3);
 	//	  __HAL_TIM_DISABLE_IT(&htim3, TIM_IT_UPDATE); //using this sometimes "disables" TIM2 for 53 seconds like it has missed restart point and is overflowing. Why?
 	TIM2->CNT = 0;		// reset TIM2 otherwise it will miss set point and will be off until overflow.
@@ -62,27 +82,60 @@ void CalibrationModeFromISR(void)
 
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6) == 0 && Previous_Pin6_State == 1)
 		{
-			CalibrationFactor += 0.1;
+			CalibrationFactor += 0.0005;
+			if(CalibrationFactor > 1.02) CalibrationFactor = 1.02; // limit Calibration factor to + 2%
 			Previous_Pin6_State = 0;
 			TIM2->CNT = 0;
 			TIM2->ARR = 7999 * CalibrationFactor;
+			UpdateCalibrationDisplay();
+
 		}
 
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) == 0 && Previous_Pin8_State == 1)
 		{
-			CalibrationFactor -= 0.1;		// later make sure it doesn't go below 0 !
+			CalibrationFactor -= 0.0005;		// later make sure it doesn't go below 0 !
+			if(CalibrationFactor < 0.98) CalibrationFactor = 0.98; // limit Calibration factor to - 2%
 			Previous_Pin8_State = 0;
 			TIM2->CNT = 0;
 			TIM2->ARR = 7999 * CalibrationFactor;
+			UpdateCalibrationDisplay();
 		}
 	}
 
+	for(int i = 0; i < 1000000; i++); // about 140 ms
+	OLEDupToDate = false;
+	CalibrationModeFlag = false;
 	ApplyCalFactor();
+	SaveCalibrationFactorInFlash(CalibrationFactor * 1000000);
+
+
+	if(InitialCalibrationFactor != CalibrationFactor)
+	{
+		// Calibration saved message on Display
+		ssd1306_Fill(Black);
+		ssd1306_SetCursor(0, 10);
+		ssd1306_WriteString("CALIBRATION:", Font_11x18, White);
+		ssd1306_SetCursor(0, 30);
+		ssd1306_WriteString("   SAVED", Font_11x18, White);
+		ssd1306_UpdateScreen();
+		HAL_Delay(2000);
+	}
+
+
+
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);	// due to common external interrupts
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
+	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 	HAL_TIM_Base_Start_IT(&htim3);
 	//	  __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_UPDATE);
 
 }
 
+void ReadCalibrationDataFromFlash(float *CalibrationFactor)
+{
+	uint32_t row_value_calibration_factor = *(ptrCalibrationFactorInFlashAddress);
+	*CalibrationFactor = (float)row_value_calibration_factor / 1000000;
+}
 
 /*
 if(!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13))

@@ -15,7 +15,7 @@ typedef struct
 }CasesTypeDef;
 
 void ApplyCalFactor(void);
-void Init_Freq(void);
+void InitFrequency(void);
 void FreqCaseUpFromISR(void);
 void FreqCaseDownFromISR(void);
 

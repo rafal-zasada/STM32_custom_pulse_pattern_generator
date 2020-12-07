@@ -13,6 +13,15 @@
 OLEDStates_type OLEDDisplayState = Case1;
 bool OLEDupToDate = false;
 
+void DrawSplitLine(void)
+{
+//	void ssd1306_DrawPixel(uint8_t x, uint8_t y, SSD1306_COLOR color)
+	for(int i = 0; i < 30; i++)
+	{
+		ssd1306_DrawPixel(60, 32 + i, White);
+	}
+;
+}
 
 void update_OLED_display(OLEDStates_type State)
 {
@@ -26,6 +35,7 @@ void update_OLED_display(OLEDStates_type State)
 		ssd1306_WriteString("f1(kHz)   f2(kHz)", Font_7x10, White);
 		ssd1306_SetCursor(0, 45);
 		ssd1306_WriteString("0.850 1.925", Font_11x18, White);
+		DrawSplitLine();
 		ssd1306_UpdateScreen();
 		break;
 
@@ -37,6 +47,7 @@ void update_OLED_display(OLEDStates_type State)
 		ssd1306_WriteString("f1(kHz)   f2(kHz)", Font_7x10, White);
 		ssd1306_SetCursor(0, 45);
 		ssd1306_WriteString("1.350 1.800", Font_11x18, White);
+		DrawSplitLine();
 		ssd1306_UpdateScreen();
 		break;
 
@@ -48,6 +59,7 @@ void update_OLED_display(OLEDStates_type State)
 		ssd1306_WriteString("f1(kHz)   f2(kHz)", Font_7x10, White);
 		ssd1306_SetCursor(0, 45);
 		ssd1306_WriteString("2.215 1.350", Font_11x18, White);
+		DrawSplitLine();
 		ssd1306_UpdateScreen();
 		break;
 
@@ -59,6 +71,7 @@ void update_OLED_display(OLEDStates_type State)
 		ssd1306_WriteString("f1(kHz)   f2(kHz)", Font_7x10, White);
 		ssd1306_SetCursor(0, 45);
 		ssd1306_WriteString("0.725 1.800", Font_11x18, White);
+		DrawSplitLine();
 		ssd1306_UpdateScreen();
 		break;
 
@@ -70,6 +83,7 @@ void update_OLED_display(OLEDStates_type State)
 		ssd1306_WriteString("f1(kHz)   f2(kHz)", Font_7x10, White);
 		ssd1306_SetCursor(0, 45);
 		ssd1306_WriteString("2.250 1.350", Font_11x18, White);
+		DrawSplitLine();
 		ssd1306_UpdateScreen();
 		break;
 
@@ -81,6 +95,7 @@ void update_OLED_display(OLEDStates_type State)
 		ssd1306_WriteString("f1(kHz)   f2(kHz)", Font_7x10, White);
 		ssd1306_SetCursor(0, 45);
 		ssd1306_WriteString("1.420 3.930", Font_11x18, White);
+		DrawSplitLine();
 		ssd1306_UpdateScreen();
 		break;
 
@@ -92,6 +107,7 @@ void update_OLED_display(OLEDStates_type State)
 		ssd1306_WriteString("f1(kHz)   f2(kHz)", Font_7x10, White);
 		ssd1306_SetCursor(0, 45);
 		ssd1306_WriteString("0.850 6.000", Font_11x18, White);
+		DrawSplitLine();
 		ssd1306_UpdateScreen();
 		break;
 
