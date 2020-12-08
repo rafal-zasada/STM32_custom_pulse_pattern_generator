@@ -24,7 +24,7 @@ extern char PC_GUI_message[200];
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern float CalibrationFactor;
-extern UART_HandleTypeDef huart2;
+//extern UART_HandleTypeDef huart2;
 extern bool OLEDupToDate;
 bool CalibrationModeFlag;
 
@@ -69,7 +69,7 @@ void CalibrationMode(void)
 	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 	UpdateCalibrationDisplay();
 	HAL_TIM_Base_Stop_IT(&htim3);
-	//	  __HAL_TIM_DISABLE_IT(&htim3, TIM_IT_UPDATE); //using this sometimes "disables" TIM2 for 53 seconds like it has missed restart point and is overflowing. Why?
+	// __HAL_TIM_DISABLE_IT(&htim3, TIM_IT_UPDATE); //using this sometimes "disables" TIM2 for 53 seconds like it has missed restart point and is overflowing. Why?
 	TIM2->CNT = 0;		// reset TIM2 otherwise it will miss set point and will be off until overflow.
 	TIM2->ARR = 7999 * CalibrationFactor;	//Set timer2 period to 100us --> 10 kHz (calibration frequency)
 
@@ -88,7 +88,6 @@ void CalibrationMode(void)
 			TIM2->CNT = 0;
 			TIM2->ARR = 7999 * CalibrationFactor;
 			UpdateCalibrationDisplay();
-
 		}
 
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) == 0 && Previous_Pin8_State == 1)
@@ -108,7 +107,6 @@ void CalibrationMode(void)
 	ApplyCalFactor();
 	SaveCalibrationFactorInFlash(CalibrationFactor * 1000000);
 
-
 	if(InitialCalibrationFactor != CalibrationFactor)
 	{
 		// Calibration saved message on Display
@@ -121,14 +119,11 @@ void CalibrationMode(void)
 		HAL_Delay(2000);
 	}
 
-
-
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);	// due to common external interrupts
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 	HAL_TIM_Base_Start_IT(&htim3);
 	//	  __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_UPDATE);
-
 }
 
 void ReadCalibrationDataFromFlash(float *CalibrationFactor)
@@ -137,17 +132,3 @@ void ReadCalibrationDataFromFlash(float *CalibrationFactor)
 	*CalibrationFactor = (float)row_value_calibration_factor / 1000000;
 }
 
-/*
-if(!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13))
-{
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    HAL_Delay(100);
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    HAL_Delay(100);
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    HAL_Delay(100);
-
-    SaveCalibrationInEEPROM(0x1111222233334444);
-}
-
-*/

@@ -10,8 +10,6 @@
 #include "stm32l4xx_hal.h"
 #include <stdbool.h>
 #include "OLED_display_state.h"
-//#include "freq_selection.h"
-
 
 int Freq_1;
 int Freq_2;
@@ -52,22 +50,43 @@ void ApplyCalFactor(void)
 	}
 }
 
-
 void InitFrequency(void)
 {
 	ApplyCalFactor();
 	//Initialise to Case1 and Freq1
-	CurrentCase = 0; // array index - actual Case is + 1
+	CurrentCase = 0; // array index, actual Case is + 1
 	CurrentFrequency = CalibratedCasesSet1[CurrentCase].Freq_1;
-
-
 }
 
+// interrupt handler not using HAL to fix pin toggle jitter
+void TIM3_IRQHandler(void)
+{
+	 // GPIOC->BSRR = 0b10000;
+	 // GPIOC->BSRR = 0b100000000000000000000;
+
+	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_4);	// for scope trigger
+
+	if(TIM2->ARR == CalibratedCasesSet1[CurrentCase].Freq_1)	// writing directly to registers to avoid delays
+	{
+		TIM2->ARR = CalibratedCasesSet1[CurrentCase].Freq_2;
+	}
+	else
+	{
+		TIM2->ARR = CalibratedCasesSet1[CurrentCase].Freq_1;
+	}
+	__HAL_TIM_CLEAR_IT(&htim3, TIM_IT_UPDATE);
+}
+
+/*
+// need reenabling this Callback in stm32l4xx_it.c
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == &htim3)		// which timer triggered this function? At the moment there is only one anyway
 	{
 		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_4);	// for scope trigger
+
+		//  GPIOC->BSRR = 0b10000;
+		//  GPIOC->BSRR = 0b100000000000000000000;
 
 		if(TIM2->ARR == CalibratedCasesSet1[CurrentCase].Freq_1)	// writing directly to registers to avoid delays
 		{
@@ -79,6 +98,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		}
 	}
 }
+*/
 
 void FreqCaseUpFromISR(void)
 {
@@ -89,6 +109,7 @@ void FreqCaseUpFromISR(void)
 	OLEDDisplayState = CurrentCase;
 	OLEDupToDate = false;
 
+	// debug
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
 	for(int i = 0; i < 100; i++);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
@@ -103,6 +124,7 @@ void FreqCaseDownFromISR(void)
 	OLEDDisplayState = CurrentCase;
 	OLEDupToDate = false;
 
+	// debug
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
     for(int i = 0; i < 100; i++);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);

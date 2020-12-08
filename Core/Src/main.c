@@ -21,7 +21,6 @@
 #include "main.h"
 #include "i2c.h"
 #include "tim.h"
-#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -109,14 +108,10 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_I2C3_Init();
-  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-
-
-
-  snprintf(PC_GUI_message, 200, "System Clock = %lu\n",  SystemCoreClock);
-  HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message), 100);
+  //snprintf(PC_GUI_message, 200, "System Clock = %lu\n",  SystemCoreClock);
+  //HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message), 100);
 
   InitCalibrationDataInFlash();
   ReadCalibrationDataFromFlash(&CalibrationFactor);
@@ -149,13 +144,10 @@ int main(void)
 //	SystemCoreClockUpdate(); // Updates SystemCoreClock according to register settings. This function must be called if clock settings has been changed. Be aware that a value stored to SystemCoreClock during low level initialisation (i.e. SystemInit()) might get overwritten by C library startup code and/or .bss section initialization. Thus its highly recommended to call SystemCoreClockUpdate at the beginning of the user main() routine.
 //	SysTick_Config(SystemCoreClock/1000); // SystemCoreClock - global variable that contains the system frequency. Configure SysTick to generate an interrupt timing (it will produce the same interval for any clock speed). SysTick can be used for timing if it is not used for operating system.  /1000 gives SysTick every 1ms, /100 gives SysTick every 10 ms
 
-
-
   while (1)
   {
     HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    HAL_Delay(300);
- //   for(int i = 0; i < 10000000; i++);  // 10000000 about 1.4s with 80MHz clock
+    HAL_Delay(100);
 
     if(OLEDupToDate != true)  // disabled due to problems with interrupt
     {
@@ -168,13 +160,9 @@ int main(void)
     	CalibrationMode();
     }
 
-
-	snprintf(PC_GUI_message, 40, "Calibration Factor = %f\n", CalibrationFactor);
-	HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message) + 1, 100);
-
-	snprintf(PC_GUI_message, 40, "sizeof double = %u\n", sizeof(double));
-	HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message) + 1, 100);
-
+    // debugging
+	// snprintf(PC_GUI_message, 40, "Calibration Factor = %f\n", CalibrationFactor);
+	// HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message) + 1, 100);
 
     /* USER CODE END WHILE */
 
@@ -222,8 +210,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_I2C3;
-  PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C3;
   PeriphClkInit.I2c3ClockSelection = RCC_I2C3CLKSOURCE_PCLK1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {

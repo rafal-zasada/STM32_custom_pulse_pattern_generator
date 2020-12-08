@@ -20,7 +20,6 @@ void DrawSplitLine(void)
 	{
 		ssd1306_DrawPixel(60, 32 + i, White);
 	}
-;
 }
 
 void update_OLED_display(OLEDStates_type State)
@@ -116,7 +115,6 @@ void update_OLED_display(OLEDStates_type State)
 	}
 
 	OLEDupToDate = true;
-
 }
 
 
