@@ -1,5 +1,5 @@
 freq_selection.c:43:6:ApplyCalFactor	16	static
 freq_selection.c:53:6:InitFrequency	8	static
 freq_selection.c:62:6:TIM3_IRQHandler	8	static
-freq_selection.c:103:6:FreqCaseUpFromISR	16	static
-freq_selection.c:118:6:FreqCaseDownFromISR	16	static
+freq_selection.c:109:6:FreqCaseUpFromISR	16	static
+freq_selection.c:124:6:FreqCaseDownFromISR	16	static

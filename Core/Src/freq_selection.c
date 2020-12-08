@@ -61,8 +61,14 @@ void InitFrequency(void)
 // interrupt handler not using HAL to fix pin toggle jitter
 void TIM3_IRQHandler(void)
 {
-	 // GPIOC->BSRR = 0b10000;
-	 // GPIOC->BSRR = 0b100000000000000000000;
+	if(TIM2->ARR == CalibratedCasesSet1[CurrentCase].Freq_1)
+	{
+		GPIOC->BSRR = 0b10000; // set pin 4
+	}
+	else
+	{
+		GPIOC->BSRR = 0b100000000000000000000; // reset pin 4
+	}
 
 	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_4);	// for scope trigger
 
