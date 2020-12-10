@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "ssd1306.h"
+#include "OLED_display_state.h"
 
 uint32_t PAGEError = 0;					// error will be saved here
 static FLASH_EraseInitTypeDef EraseInitStruct;
@@ -26,6 +27,7 @@ extern TIM_HandleTypeDef htim3;
 extern float CalibrationFactor;
 //extern UART_HandleTypeDef huart2;
 extern bool OLEDupToDate;
+extern OLEDStates_type OLEDDisplayState;
 bool CalibrationModeFlag;
 
 void InitCalibrationDataInFlash(void)	// initialisation needed only for erase function before write to EEPROM
@@ -66,9 +68,10 @@ void CalibrationMode(void)
 	bool Previous_Pin8_State = 1;
 
 	for(int i = 0; i < 1000000; i++); // about 140 ms
-	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
+	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);	// disable switch function implemented in ISR to use this switch here for calibration
 	UpdateCalibrationDisplay();
-	HAL_TIM_Base_Stop_IT(&htim3);
+
+	HAL_TIM_Base_Stop_IT(&htim3);	// stop frequency switching
 	// __HAL_TIM_DISABLE_IT(&htim3, TIM_IT_UPDATE); //using this sometimes "disables" TIM2 for 53 seconds like it has missed restart point and is overflowing. Why?
 	TIM2->CNT = 0;		// reset TIM2 otherwise it will miss set point and will be off until overflow.
 	TIM2->ARR = 7999 * CalibrationFactor;	//Set timer2 period to 100us --> 10 kHz (calibration frequency)
@@ -78,7 +81,7 @@ void CalibrationMode(void)
 		Previous_Pin6_State = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6);
 		Previous_Pin8_State = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8);
 
-		for(int i = 0; i < 100000; i++); // wait between consecutive pin reads to avoid bouncing (about 14 ms)
+		for(int i = 0; i < 100000; i++); // wait between consecutive pin reads to avoid bouncing around threshold (about 14 ms)
 
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6) == 0 && Previous_Pin6_State == 1)
 		{
@@ -119,10 +122,11 @@ void CalibrationMode(void)
 		HAL_Delay(2000);
 	}
 
+	update_OLED_display(OLEDDisplayState);
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);	// due to common external interrupts
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-	HAL_TIM_Base_Start_IT(&htim3);
+	HAL_TIM_Base_Start_IT(&htim3); // start frequency switching
 	//	  __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_UPDATE);
 }
 

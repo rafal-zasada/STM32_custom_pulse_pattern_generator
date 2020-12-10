@@ -30,7 +30,7 @@ Core/Src/frequency_calibration.o: ../Core/Src/frequency_calibration.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h \
  ../Core/Inc/tim.h ../Core/Inc/main.h ../Core/Inc/freq_selection.h \
  ../SSD1306_library/ssd1306.h ../SSD1306_library/ssd1306_fonts.h \
- ../Core/Inc/i2c.h
+ ../Core/Inc/i2c.h ../Core/Inc/OLED_display_state.h
 
 ../Core/Inc/frequency_calibration.h:
 
@@ -101,3 +101,5 @@ Core/Src/frequency_calibration.o: ../Core/Src/frequency_calibration.c \
 ../SSD1306_library/ssd1306_fonts.h:
 
 ../Core/Inc/i2c.h:
+
+../Core/Inc/OLED_display_state.h:

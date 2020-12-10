@@ -114,7 +114,10 @@ int main(void)
   //snprintf(PC_GUI_message, 200, "System Clock = %lu\n",  SystemCoreClock);
   //HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message), 100);
 
+  HAL_Delay(300);
+
   // start screen
+  ssd1306_Init();
   ssd1306_Fill(Black);
   ssd1306_SetCursor(0, 0);
   ssd1306_WriteString("       TMD", Font_7x10, White);
@@ -125,7 +128,9 @@ int main(void)
   ssd1306_SetCursor(0, 44);
   ssd1306_WriteString(" GENERATOR", Font_11x18, White);
   ssd1306_UpdateScreen();
-  HAL_Delay(3000);
+  HAL_Delay(2500);
+
+  update_OLED_display(OLEDDisplayState); //current case
 
   InitCalibrationDataInFlash();
   ReadCalibrationDataFromFlash(&CalibrationFactor);
@@ -138,20 +143,18 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  ssd1306_Init();
-  HAL_Delay(300);
-
 //	SystemCoreClockUpdate(); // Updates SystemCoreClock according to register settings. This function must be called if clock settings has been changed. Be aware that a value stored to SystemCoreClock during low level initialisation (i.e. SystemInit()) might get overwritten by C library startup code and/or .bss section initialization. Thus its highly recommended to call SystemCoreClockUpdate at the beginning of the user main() routine.
 //	SysTick_Config(SystemCoreClock/1000); // SystemCoreClock - global variable that contains the system frequency. Configure SysTick to generate an interrupt timing (it will produce the same interval for any clock speed). SysTick can be used for timing if it is not used for operating system.  /1000 gives SysTick every 1ms, /100 gives SysTick every 10 ms
 
   while (1)
   {
-    HAL_Delay(100);
+	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	HAL_Delay(100);
 
     if(OLEDupToDate != true)  // disabled due to problems with interrupt
     {
-        update_OLED_display(OLEDDisplayState);
-        update_OLED_display(OLEDDisplayState); // second time due to problems with interrupts
+      //  update_OLED_display(OLEDDisplayState);
+      //  update_OLED_display(OLEDDisplayState); // second time due to problems with interrupts
     }
 
     if(CalibrationModeFlag)

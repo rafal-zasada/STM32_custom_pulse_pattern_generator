@@ -19,6 +19,7 @@ float CalibrationFactor;
 extern OLEDStates_type OLEDDisplayState;
 extern bool OLEDupToDate;
 extern TIM_HandleTypeDef htim3;
+extern TIM_HandleTypeDef htim2;
 
 //C99 style initialisation - timer (TIM2) settings for required frequencies are valid for main clock = 80MHz and prescaler = 0 (actual x1)
 
@@ -70,7 +71,9 @@ void TIM3_IRQHandler(void)
 		GPIOC->BSRR = 0b100000000000000000000; // reset pin 4
 	}
 
-	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_4);	// for scope trigger
+
+
+//	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);
 
 	if(TIM2->ARR == CalibratedCasesSet1[CurrentCase].Freq_1)	// writing directly to registers to avoid delays
 	{
@@ -80,7 +83,11 @@ void TIM3_IRQHandler(void)
 	{
 		TIM2->ARR = CalibratedCasesSet1[CurrentCase].Freq_1;
 	}
-	__HAL_TIM_CLEAR_IT(&htim3, TIM_IT_UPDATE);
+
+	//	TIM2->CNT = 0xFFFF; // r
+//	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+
+	__HAL_TIM_CLEAR_IT(&htim3, TIM_IT_UPDATE); // not using HAL callback so it has to be done manually
 }
 
 /*
@@ -114,11 +121,7 @@ void FreqCaseUpFromISR(void)
 
 	OLEDDisplayState = CurrentCase;
 	OLEDupToDate = false;
-
-	// debug
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-	for(int i = 0; i < 100; i++);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+	update_OLED_display(OLEDDisplayState);
 }
 
 void FreqCaseDownFromISR(void)
@@ -129,11 +132,7 @@ void FreqCaseDownFromISR(void)
 
 	OLEDDisplayState = CurrentCase;
 	OLEDupToDate = false;
-
-	// debug
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-    for(int i = 0; i < 100; i++);
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+	update_OLED_display(OLEDDisplayState);
 }
 
 
