@@ -87,6 +87,9 @@ void TIM3_IRQHandler(void)
 	//	TIM2->CNT = 0xFFFF; // r
 //	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 
+	TIM2->CNT = 1; 	// reset timer2 counter otherwise smaller ARR value can cause timer to miss set point and continue until overflow.
+					// don't reset to zero because zero value will generate timer event
+
 	__HAL_TIM_CLEAR_IT(&htim3, TIM_IT_UPDATE); // not using HAL callback so it has to be done manually
 }
 

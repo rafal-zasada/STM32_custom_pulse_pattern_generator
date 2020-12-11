@@ -85,8 +85,8 @@ void CalibrationMode(void)
 
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6) == 0 && Previous_Pin6_State == 1)
 		{
-			CalibrationFactor += 0.0005;
-			if(CalibrationFactor > 1.02) CalibrationFactor = 1.02; // limit Calibration factor to + 2%
+			CalibrationFactor += 0.0001;
+			if(CalibrationFactor > 1.01) CalibrationFactor = 1.01; // limit Calibration factor to + 2%
 			Previous_Pin6_State = 0;
 			TIM2->CNT = 0;
 			TIM2->ARR = 7999 * CalibrationFactor;
@@ -95,7 +95,7 @@ void CalibrationMode(void)
 
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) == 0 && Previous_Pin8_State == 1)
 		{
-			CalibrationFactor -= 0.0005;		// later make sure it doesn't go below 0 !
+			CalibrationFactor -= 0.0001;		// later make sure it doesn't go below 0 !
 			if(CalibrationFactor < 0.98) CalibrationFactor = 0.98; // limit Calibration factor to - 2%
 			Previous_Pin8_State = 0;
 			TIM2->CNT = 0;
