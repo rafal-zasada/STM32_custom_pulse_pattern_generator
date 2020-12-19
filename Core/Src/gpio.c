@@ -137,20 +137,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if(GPIO_Pin == GPIO_PIN_6)	// next case button pressed
 	{
-	//	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 		FreqCaseUpFromISR();
 		for(int i = 0; i < 100000; i++); // about 14 ms debounce
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
-	//	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+		TIM2->CNT = 0; // avoid possibility of timer overflow when using updated ARR register
 	}
 
 	if(GPIO_Pin == GPIO_PIN_8)	// previous case down button pressed
 	{
-	//	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 		FreqCaseDownFromISR();
 		for(int i = 0; i < 100000; i++); // about 14 ms debounce
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
-	//	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+		TIM2->CNT = 0; // avoid possibility of timer overflow when using updated ARR register
 	}
 
 	if(GPIO_Pin == GPIO_PIN_13)	// user blue button - temporary for calibration
