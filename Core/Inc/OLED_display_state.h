@@ -9,8 +9,11 @@
 #define INC_OLED_DISPLAY_STATE_H_
 
 
-typedef enum {Case1, Case2, Case3, Case4, Case5, Case6, Case7} OLEDStates_type;
-void update_OLED_display(OLEDStates_type State);
+typedef enum 	{Leonardo_Case1, Leonardo_Case2, Leonardo_Case3, Leonardo_Case4, Leonardo_Case5, Leonardo_Case6, Leonardo_Case7,
+				Leonardo_PRF1, Leonardo_PRF2, Leonardo_PRF3, Leonardo_PRF4, Leonardo_PRF5, Leonardo_PRF6, Leonardo_PRF7, Leonardo_PRF8, Leonardo_PRF9,
+				Leonardo_Duty_12P, Leonardo_Duty_15P, Leonardo_Pattern_Q} OLEDStates_type;
+
+void Update_OLED_DisplayCase(OLEDStates_type State);
 void DrawSplitLine(void);
 
 #endif /* INC_OLED_DISPLAY_STATE_H_ */

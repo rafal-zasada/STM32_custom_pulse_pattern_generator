@@ -57,7 +57,7 @@
 
  char PC_GUI_message[200] = {0};
   extern int CurrentCase;
-  extern CasesTypeDef CalibratedCasesSet1[7];
+  extern CasesTypeDef CalibratedCasesLeonardo[7];
   extern int CurrentFrequency;
   extern OLEDStates_type OLEDDisplayState;
   extern bool OLEDupToDate;
@@ -130,7 +130,7 @@ int main(void)
   ssd1306_UpdateScreen();
   HAL_Delay(2500);
 
-  update_OLED_display(OLEDDisplayState); //current case
+  Update_OLED_DisplayCase(OLEDDisplayState); //current case
 
   InitCalibrationDataInFlash();
   ReadCalibrationDataFromFlash(&CalibrationFactor);
@@ -150,12 +150,6 @@ int main(void)
   {
 	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 	HAL_Delay(100);
-
-    if(OLEDupToDate != true)  // disabled due to problems with interrupt
-    {
-      //  update_OLED_display(OLEDDisplayState);
-      //  update_OLED_display(OLEDDisplayState); // second time due to problems with interrupts
-    }
 
     if(CalibrationModeFlag)
     {

@@ -10,8 +10,10 @@
 
 typedef struct
 {
-	unsigned int Freq_1;
-	unsigned int Freq_2;
+	unsigned int Freq1;
+	unsigned int Freq2;
+	unsigned int Pulse1;
+	unsigned int Pulse2;
 }CasesTypeDef;
 
 void ApplyCalFactor(void);

@@ -135,7 +135,7 @@ void MX_GPIO_Init(void)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if(GPIO_Pin == GPIO_PIN_6)	// next case button pressed
+	if(GPIO_Pin == GPIO_PIN_6)	// next case button pressed (PC6)
 	{
 	//	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 		FreqCaseUpFromISR();
@@ -144,7 +144,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	//	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 	}
 
-	if(GPIO_Pin == GPIO_PIN_8)	// previous case down button pressed
+	if(GPIO_Pin == GPIO_PIN_8)	// previous case down button pressed (PC8)
 	{
 	//	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 		FreqCaseDownFromISR();

@@ -29,6 +29,11 @@ endif
 
 -include ../makefile.defs
 
+BUILD_ARTIFACT_NAME := PWM_separate_files
+BUILD_ARTIFACT_EXTENSION := elf
+BUILD_ARTIFACT_PREFIX := 
+BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME).$(BUILD_ARTIFACT_EXTENSION)
+
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
 PWM_separate_files.elf \
@@ -44,11 +49,14 @@ PWM_separate_files.bin \
 
 
 # All Target
-all: PWM_separate_files.elf secondary-outputs
+all: main-build
+
+# Main-build Target
+main-build: PWM_separate_files.elf secondary-outputs
 
 # Tool invocations
-PWM_separate_files.elf: $(OBJS) $(USER_OBJS) C:\Users\Raf\STM32CubeIDE\workspace_1.4.0\PWM_separate_files\STM32L476RGTX_FLASH.ld
-	arm-none-eabi-gcc -o "PWM_separate_files.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Raf\STM32CubeIDE\workspace_1.4.0\PWM_separate_files\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="PWM_separate_files.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+PWM_separate_files.elf: $(OBJS) $(USER_OBJS) C:\Electronics\STM32_projects\PWM_separate_files\STM32L476RGTX_FLASH.ld
+	arm-none-eabi-gcc -o "PWM_separate_files.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Electronics\STM32_projects\PWM_separate_files\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="PWM_separate_files.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -74,7 +82,14 @@ clean:
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
-.PHONY: all clean dependents
+fail-specified-linker-script-missing:
+	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
+	@exit 2
+
+warn-no-linker-script-specified:
+	@echo 'Warning: No linker script specified. Check the linker settings in the build configuration.'
+
+.PHONY: all clean dependents fail-specified-linker-script-missing warn-no-linker-script-specified
 .SECONDARY:
 
 -include ../makefile.targets

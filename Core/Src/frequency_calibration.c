@@ -122,7 +122,7 @@ void CalibrationMode(void)
 		HAL_Delay(2000);
 	}
 
-	update_OLED_display(OLEDDisplayState);
+	Update_OLED_DisplayCase(OLEDDisplayState);
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);	// due to common external interrupts
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
@@ -132,7 +132,9 @@ void CalibrationMode(void)
 
 void ReadCalibrationDataFromFlash(float *CalibrationFactor)
 {
-	uint32_t row_value_calibration_factor = *(ptrCalibrationFactorInFlashAddress);
-	*CalibrationFactor = (float)row_value_calibration_factor / 1000000;
+	uint32_t raw_value_calibration_factor = *(ptrCalibrationFactorInFlashAddress);
+	if(raw_value_calibration_factor == 0xFFFFFFFF)
+		raw_value_calibration_factor = 1000000; // if not programmed/saved yet then set to 1000000
+	*CalibrationFactor = (float)raw_value_calibration_factor / 1000000;
 }
 
