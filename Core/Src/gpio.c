@@ -57,10 +57,9 @@ void MX_GPIO_Init(void)
                           |GPIO_PIN_12, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
-                          |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8
-                          |GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12
-                          |GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
+                          |GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10
+                          |GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_10
@@ -83,14 +82,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA1 PA2 PA3 PA4
-                           PA5 PA6 PA7 PA8
-                           PA9 PA10 PA11 PA12
-                           PA15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
-                          |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8
-                          |GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12
-                          |GPIO_PIN_15;
+  /*Configure GPIO pins : PA1 PA4 PA5 PA6
+                           PA7 PA8 PA9 PA10
+                           PA11 PA12 PA15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
+                          |GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10
+                          |GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -137,20 +134,20 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if(GPIO_Pin == GPIO_PIN_6)	// next case button pressed (PC6)
 	{
-	//	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 		FreqCaseUpFromISR();
-		for(int i = 0; i < 100000; i++); // about 14 ms debounce
+		for(int i = 0; i < 100000; i++); 		// about 14 ms debounce
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
-	//	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+		TIM2->CNT = 0;							// avoid timer overflow when ARR register is changed
+		TIM3->CNT = 0;							// avoid timer overflow when ARR register is changed
 	}
 
 	if(GPIO_Pin == GPIO_PIN_8)	// previous case down button pressed (PC8)
 	{
-	//	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 		FreqCaseDownFromISR();
 		for(int i = 0; i < 100000; i++); // about 14 ms debounce
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
-	//	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+		TIM2->CNT = 0;							// avoid timer overflow when ARR register is changed
+		TIM3->CNT = 0;							// avoid timer overflow when ARR register is changed
 	}
 
 	if(GPIO_Pin == GPIO_PIN_13)	// user blue button - temporary for calibration

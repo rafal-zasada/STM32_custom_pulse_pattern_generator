@@ -20,6 +20,6 @@ void ApplyCalFactor(void);
 void InitFrequency(void);
 void FreqCaseUpFromISR(void);
 void FreqCaseDownFromISR(void);
-
+void ScopeTriggerFromISR(void);
 
 #endif /* INC_FREQ_SELECTION_H_ */

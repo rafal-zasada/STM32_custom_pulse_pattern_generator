@@ -123,7 +123,7 @@ void CalibrationMode(void)
 	}
 
 	Update_OLED_DisplayCase(OLEDDisplayState);
-	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);	// due to common external interrupts
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);	// buttons used here are used somewhere else as EXTI so it has to be cleared
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 	HAL_TIM_Base_Start_IT(&htim3); // start frequency switching
