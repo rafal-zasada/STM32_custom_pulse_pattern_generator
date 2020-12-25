@@ -1,2 +1,2 @@
-OLED_display_state.c:16:6:DrawSplitLine	16	static
-OLED_display_state.c:25:6:Update_OLED_DisplayCase	16	static
+OLED_display_state.c:15:6:DrawSplitLine	16	static
+OLED_display_state.c:23:6:Update_OLED_Display_Frequency	16	static

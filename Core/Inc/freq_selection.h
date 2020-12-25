@@ -16,10 +16,11 @@ typedef struct
 	unsigned int Pulse2;
 }CasesTypeDef;
 
-void ApplyCalFactor(void);
+void ApplyFrequencyCalFactor(void);
 void InitFrequency(void);
-void FreqCaseUpFromISR(void);
-void FreqCaseDownFromISR(void);
+void NextFrequency(void);
+void PreviousFrequency(void);
 void ScopeTriggerFromISR(void);
+void Apply_PW_Offsets(void);
 
 #endif /* INC_FREQ_SELECTION_H_ */

@@ -5,7 +5,6 @@
  *      Author: Raf
  */
 
-
 #include "OLED_display_state.h"
 #include "ssd1306.h"
 #include <stdbool.h>
@@ -15,14 +14,13 @@ bool OLEDupToDate = false;
 
 void DrawSplitLine(void)
 {
-//	void ssd1306_DrawPixel(uint8_t x, uint8_t y, SSD1306_COLOR color)
 	for(int i = 0; i < 30; i++)
 	{
 		ssd1306_DrawPixel(60, 32 + i, White);
 	}
 }
 
-void Update_OLED_DisplayCase(OLEDStates_type State)
+void Update_OLED_Display_Frequency(OLEDStates_type State)
 {
 	switch(State)
 	{
@@ -228,9 +226,9 @@ void Update_OLED_DisplayCase(OLEDStates_type State)
 		ssd1306_SetCursor(0, 29);
 		ssd1306_WriteString("PRF= 70 kHz", Font_7x10, White);
 		ssd1306_SetCursor(0, 41);
-		ssd1306_WriteString("PW= 0.7 us", Font_7x10, White);
+		ssd1306_WriteString("PW= 0.2 us", Font_7x10, White);
 		ssd1306_SetCursor(0, 53);
-		ssd1306_WriteString("DUTY= 4.9 %", Font_7x10, White);
+		ssd1306_WriteString("DUTY= 1.4 %", Font_7x10, White);
 		ssd1306_UpdateScreen();
 		break;
 
@@ -265,7 +263,7 @@ void Update_OLED_DisplayCase(OLEDStates_type State)
 	case Leonardo_Pattern_Q:
 		ssd1306_Fill(Black);
 		ssd1306_SetCursor(0, 0);
-		ssd1306_WriteString("P-RN Q", Font_16x26, White);
+		ssd1306_WriteString("PRN Q", Font_16x26, White);
 		ssd1306_SetCursor(0, 29);
 		ssd1306_WriteString("PRF= 10 kHz", Font_7x10, White);
 		ssd1306_SetCursor(0, 41);
@@ -275,14 +273,9 @@ void Update_OLED_DisplayCase(OLEDStates_type State)
 		ssd1306_UpdateScreen();
 		break;
 
-
-
 	default:
 		break;
 	}
-
 	OLEDupToDate = true;
 }
-
-
 

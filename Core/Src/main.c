@@ -21,12 +21,13 @@
 #include "main.h"
 #include "i2c.h"
 #include "tim.h"
-#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+//#include<stdint.h>  // for uint64_t
+#include "calibration.h"
 #include "ssd1306_tests.h"
 #include "ssd1306.h"
 #include "freq_selection.h"
@@ -34,7 +35,6 @@
 #include "stdio.h"
 #include <stdbool.h>
 #include <string.h>
-#include "frequency_calibration.h"
 
 /* USER CODE END Includes */
 
@@ -62,8 +62,10 @@
   extern int CurrentFrequency;
   extern OLEDStates_type OLEDDisplayState;
   extern bool OLEDupToDate;
-  extern float CalibrationFactor;
-  extern bool CalibrationModeFlag;
+  extern float FrequencyCalibrationFactor;
+  extern float PulseWidthOffset;
+  extern bool FrequencyCalibrationModeFlag;
+  extern bool PulseOffsetAdjustmentModeFlag;
 
 /* USER CODE END PV */
 
@@ -109,7 +111,6 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_I2C3_Init();
-  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   //debug
@@ -132,10 +133,11 @@ int main(void)
   ssd1306_UpdateScreen();
   HAL_Delay(2500);
 
-  Update_OLED_DisplayCase(OLEDDisplayState); //current case
+  Update_OLED_Display_Frequency(OLEDDisplayState); //current case
 
   InitCalibrationDataInFlash();
-  ReadCalibrationDataFromFlash(&CalibrationFactor);
+  FrequencyCalibrationFactor = Read_Frequency_Calibration_Factor_From_Flash();
+  PulseWidthOffset = ReadPulseWidthOffsetFromFlash();
   InitFrequency();
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim3);
@@ -153,9 +155,14 @@ int main(void)
 	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 	HAL_Delay(100);
 
-    if(CalibrationModeFlag)
+    if(FrequencyCalibrationModeFlag)
     {
-    	CalibrationMode();
+    	Freq_Calibration_Mode();
+    }
+
+    if(PulseOffsetAdjustmentModeFlag)
+    {
+    	Pulse_Adjustment_Mode();
     }
 
     // debugging
@@ -208,8 +215,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_I2C3;
-  PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C3;
   PeriphClkInit.I2c3ClockSelection = RCC_I2C3CLKSOURCE_PCLK1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {

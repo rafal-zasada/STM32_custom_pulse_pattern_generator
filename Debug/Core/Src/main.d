@@ -27,13 +27,11 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h \
- ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
- ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
  ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/tim.h \
- ../Core/Inc/usart.h ../Core/Inc/gpio.h \
+ ../Core/Inc/gpio.h ../Core/Inc/calibration.h \
  ../SSD1306_library/ssd1306_tests.h ../SSD1306_library/ssd1306.h \
  ../SSD1306_library/ssd1306_fonts.h ../Core/Inc/freq_selection.h \
- ../Core/Inc/OLED_display_state.h ../Core/Inc/frequency_calibration.h
+ ../Core/Inc/OLED_display_state.h
 
 ../Core/Inc/main.h:
 
@@ -93,19 +91,15 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h:
 
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:
-
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
-
 ../Core/Inc/i2c.h:
 
 ../Core/Inc/main.h:
 
 ../Core/Inc/tim.h:
 
-../Core/Inc/usart.h:
-
 ../Core/Inc/gpio.h:
+
+../Core/Inc/calibration.h:
 
 ../SSD1306_library/ssd1306_tests.h:
 
@@ -116,5 +110,3 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/freq_selection.h:
 
 ../Core/Inc/OLED_display_state.h:
-
-../Core/Inc/frequency_calibration.h:

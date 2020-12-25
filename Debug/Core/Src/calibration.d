@@ -1,5 +1,5 @@
-Core/Src/frequency_calibration.o: ../Core/Src/frequency_calibration.c \
- ../Core/Inc/frequency_calibration.h \
+Core/Src/calibration.o: ../Core/Src/calibration.c \
+ ../Core/Inc/calibration.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../Core/Inc/stm32l4xx_hal_conf.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
@@ -28,13 +28,11 @@ Core/Src/frequency_calibration.o: ../Core/Src/frequency_calibration.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h \
- ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
- ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
  ../Core/Inc/tim.h ../Core/Inc/main.h ../Core/Inc/freq_selection.h \
  ../SSD1306_library/ssd1306.h ../SSD1306_library/ssd1306_fonts.h \
  ../Core/Inc/i2c.h ../Core/Inc/OLED_display_state.h
 
-../Core/Inc/frequency_calibration.h:
+../Core/Inc/calibration.h:
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 
@@ -91,10 +89,6 @@ Core/Src/frequency_calibration.o: ../Core/Src/frequency_calibration.c \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h:
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h:
-
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:
-
-../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
 
 ../Core/Inc/tim.h:
 

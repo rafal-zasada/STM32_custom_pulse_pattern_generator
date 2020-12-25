@@ -1,5 +1,5 @@
 frequency_calibration.c:33:6:InitCalibrationDataInFlash	4	static
 frequency_calibration.c:41:6:SaveCalibrationFactorInFlash	16	static
 frequency_calibration.c:49:13:UpdateCalibrationDisplay	24	static
-frequency_calibration.c:64:6:CalibrationMode	40	static
-frequency_calibration.c:133:6:ReadCalibrationDataFromFlash	24	static
+frequency_calibration.c:64:6:Freq_Calibration_Mode	40	static
+frequency_calibration.c:140:6:Read_Calibration_Factor_From_Flash	24	static
