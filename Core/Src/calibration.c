@@ -31,7 +31,6 @@ extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern float FrequencyCalibrationFactor;
 //extern UART_HandleTypeDef huart2; // for debug only
-extern bool OLEDupToDate;
 extern OLEDStates_type OLEDDisplayState;
 extern float PulseWidthOffset;
 bool FrequencyCalibrationModeFlag;
@@ -156,7 +155,6 @@ void Freq_Calibration_Mode(void)
 	}
 
 	for(int i = 0; i < 1000000; i++); // about 140 ms
-	OLEDupToDate = false;
 	FrequencyCalibrationModeFlag = false;
 
 
@@ -236,7 +234,6 @@ void Pulse_Adjustment_Mode(void)
 	}
 
 	for(int i = 0; i < 1000000; i++); // about 140 ms
-	OLEDupToDate = false;
 	PulseOffsetAdjustmentModeFlag = false;
 
 

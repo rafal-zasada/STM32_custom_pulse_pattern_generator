@@ -21,7 +21,6 @@ int CurrentFrequency;
 float FrequencyCalibrationFactor;
 float PulseWidthOffset;						// temporary initialisation - later it will be read from flash
 extern OLEDStates_type OLEDDisplayState;
-extern bool OLEDupToDate;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim2;
 #define NUMBER_OF_CASES 21
@@ -315,7 +314,6 @@ void NextFrequency(void)
 		CurrentCase = 0;	// go to the beginning
 
 	OLEDDisplayState = CurrentCase;
-	OLEDupToDate = false;
 	OLED_Update_Display_Case(OLEDDisplayState);
 }
 
@@ -326,7 +324,6 @@ void PreviousFrequency(void)
 		CurrentCase = NUMBER_OF_CASES - 1; 		// go to the last one
 
 	OLEDDisplayState = CurrentCase;
-	OLEDupToDate = false;
 	OLED_Update_Display_Case(OLEDDisplayState);
 }
 

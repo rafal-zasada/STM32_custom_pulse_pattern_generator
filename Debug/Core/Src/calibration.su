@@ -1,8 +1,8 @@
-calibration.c:45:6:InitDataInFlashSettings	4	static
-calibration.c:53:6:SaveCalibrationFactorInFlash	16	static
-calibration.c:62:7:ReadFrequencyCalibrationFactorFromFlash	16	static
-calibration.c:70:7:ReadPulseWidthOffsetFromFlash	16	static
-calibration.c:78:13:UpdateFrequencyCalibrationDisplay	24	static
-calibration.c:93:13:UpdatePulseAdjustmentDisplay	24	static
-calibration.c:108:6:Freq_Calibration_Mode	48	static
-calibration.c:186:6:Pulse_Adjustment_Mode	48	static
+calibration.c:44:6:InitDataInFlashSettings	4	static
+calibration.c:52:6:SaveCalibrationFactorInFlash	16	static
+calibration.c:61:7:ReadFrequencyCalibrationFactorFromFlash	16	static
+calibration.c:69:7:ReadPulseWidthOffsetFromFlash	16	static
+calibration.c:77:13:UpdateFrequencyCalibrationDisplay	24	static
+calibration.c:92:13:UpdatePulseAdjustmentDisplay	24	static
+calibration.c:107:6:Freq_Calibration_Mode	48	static
+calibration.c:184:6:Pulse_Adjustment_Mode	48	static

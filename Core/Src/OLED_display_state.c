@@ -11,7 +11,6 @@
 #include "ssd1306.h"
 
 OLEDStates_type OLEDDisplayState = Leonardo_Case1;
-bool OLEDupToDate = false;
 extern int CurrentCase;
 
 // not used
@@ -337,6 +336,5 @@ void OLED_Update_Display_Case(OLEDStates_type State)
 	default:
 		break;
 	}
-	OLEDupToDate = true;
 }
 

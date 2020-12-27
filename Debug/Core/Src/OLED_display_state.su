@@ -1,2 +1,2 @@
-OLED_display_state.c:27:13:OLED_WriteCaseNumber	24	static
-OLED_display_state.c:37:6:OLED_Update_Display_Case	16	static
+OLED_display_state.c:26:13:OLED_WriteCaseNumber	24	static
+OLED_display_state.c:36:6:OLED_Update_Display_Case	16	static
