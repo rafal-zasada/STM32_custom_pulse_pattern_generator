@@ -26,15 +26,17 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-//#include<stdint.h>  // for uint64_t
+#include <stdint.h>  // for uint64_t
+#include <stdbool.h>
+#include <string.h>
+#include <stdio.h>
 #include "calibration.h"
 #include "ssd1306_tests.h"
 #include "ssd1306.h"
 #include "freq_selection.h"
 #include "OLED_display_state.h"
-#include "stdio.h"
-#include <stdbool.h>
-#include <string.h>
+
+
 
 /* USER CODE END Includes */
 
@@ -113,9 +115,8 @@ int main(void)
   MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
 
-  //debug
-  //snprintf(PC_GUI_message, 200, "System Clock = %lu\n",  SystemCoreClock);
-  //HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message), 100);
+  //snprintf(PC_GUI_message, 200, "System Clock = %lu\n",  SystemCoreClock);					// debug only
+  //HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message), 100);	// debug only
 
   HAL_Delay(300);
 
@@ -133,12 +134,16 @@ int main(void)
   ssd1306_UpdateScreen();
   HAL_Delay(2500);
 
-  Update_OLED_Display_Frequency(OLEDDisplayState); //current case
 
-  InitCalibrationDataInFlash();
-  FrequencyCalibrationFactor = Read_Frequency_Calibration_Factor_From_Flash();
+  InitDataInFlashSettings();
+  FrequencyCalibrationFactor = ReadFrequencyCalibrationFactorFromFlash();
   PulseWidthOffset = ReadPulseWidthOffsetFromFlash();
-  InitFrequency();
+  InitPatternGenerator();
+  OLED_Update_Display_Case(OLEDDisplayState); //current case
+
+
+
+
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim3);
 
@@ -164,10 +169,6 @@ int main(void)
     {
     	Pulse_Adjustment_Mode();
     }
-
-    // debugging
-	// snprintf(PC_GUI_message, 40, "Calibration Factor = %f\n", CalibrationFactor);
-	// HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message) + 1, 100);
 
     /* USER CODE END WHILE */
 

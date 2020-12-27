@@ -17,7 +17,7 @@ typedef struct
 }CasesTypeDef;
 
 void ApplyFrequencyCalFactor(void);
-void InitFrequency(void);
+void InitPatternGenerator(void);
 void NextFrequency(void);
 void PreviousFrequency(void);
 void ScopeTriggerFromISR(void);

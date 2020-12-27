@@ -5,13 +5,14 @@
  *      Author: Raf
  */
 
-
-#include "freq_selection.h"
-#include "stm32l4xx_hal.h"
-#include <stdbool.h>
-#include "OLED_display_state.h"
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
+#include <stdbool.h>
+#include "stm32l4xx_hal.h"
+#include "freq_selection.h"
+#include "OLED_display_state.h"
+
 
 int Freq_1;
 int Freq_2;
@@ -23,15 +24,21 @@ extern OLEDStates_type OLEDDisplayState;
 extern bool OLEDupToDate;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim2;
-#define NUMBER_OF_CASES 19
+#define NUMBER_OF_CASES 21
 
 
 //typedef enum 	{Leonardo_Case1, Leonardo_Case2, Leonardo_Case3, Leonardo_Case4, Leonardo_Case5, Leonardo_Case6, Leonardo_Case7,
 //				Leonardo_PRF1, Leonardo_PRF2, Leonardo_PRF3, Leonardo_PRF4, Leonardo_PRF5, Leonardo_PRF6, Leonardo_PRF7, Leonardo_PRF8, Leonardo_PRF9,
 //				Leonardo_Duty_12P, Leonardo_Duty_15P, Leonardo_Pattern_Q} OLEDStates_type;
 
-//C99 style initialisation - timer (TIM2) settings for required frequencies are valid for main clock = 80MHz and prescaler = 0 (actual x1)
+//C99 style initialisation - timer (TIM2) settings for required frequencies are valid for main clock = 80MHz and pre-scaler = 0 (actual x1)
 CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
+												 [Leonardo_TC1].Freq1 = 7999, [Leonardo_TC1].Freq2 = 7999,	// TC1 10kHz
+		 	 	 	 	 	 	 	 	 	 	 [Leonardo_TC2].Freq1 = 6666, [Leonardo_TC2].Freq2 = 6666,	// TC2 12kHz
+
+												 [Leonardo_TC1].Pulse1 = 800, [Leonardo_TC1].Pulse2 = 800,	// TC1 10us
+												 [Leonardo_TC2].Pulse1 = 800, [Leonardo_TC2].Pulse2 = 800,	// TC2 10us
+
 												 [Leonardo_Case1].Freq1 = 94117, [Leonardo_Case1].Freq2 = 41557,	// Leonardo_Case1 0.85kHz / 1.925kHz
 												 [Leonardo_Case2].Freq1 = 59258, [Leonardo_Case2].Freq2 = 44443,		// Leonardo_Case2 1.35kHz / 1.8kHz
 												 [Leonardo_Case3].Freq1 = 36116, [Leonardo_Case3].Freq2 = 59258,		// Leonardo_Case3 2.215kHz / 1.35kHz
@@ -58,11 +65,6 @@ CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_PRF8].Freq1 = 1142, [Leonardo_PRF8].Freq2 = 1142,		// Leonardo_PRF8
 												 [Leonardo_PRF9].Freq1 = 1142, [Leonardo_PRF9].Freq2 = 1142,		// Leonardo_PRF9
 
-												 [Leonardo_Duty_12P].Freq1 = 33332, [Leonardo_Duty_12P].Freq2 = 33332,	// Leonardo_Duty_12P
-												 [Leonardo_Duty_15P].Freq1 = 5332, [Leonardo_Duty_15P].Freq2 = 6913,		// Leonardo_Duty_15P
-												 [Leonardo_Pattern_Q].Freq1 = 7999, [Leonardo_Pattern_Q].Freq2 = 7999,		// Leonardo_Pattern_Q
-
-
 												 [Leonardo_PRF1].Pulse1 = 4000, [Leonardo_PRF1].Pulse2 = 4000,		// 50 us
 												 [Leonardo_PRF2].Pulse1 = 960, [Leonardo_PRF2].Pulse2 = 960,		// 12 us
 												 [Leonardo_PRF3].Pulse1 = 480, [Leonardo_PRF3].Pulse2 = 480,		// 6 us
@@ -73,13 +75,22 @@ CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_PRF8].Pulse1 = 136, [Leonardo_PRF8].Pulse2 = 136,		// 1.7 us
 												 [Leonardo_PRF9].Pulse1 = 16, [Leonardo_PRF9].Pulse2 = 16,		// 0.2 us
 
+												 [Leonardo_Duty_12P].Freq1 = 33332, [Leonardo_Duty_12P].Freq2 = 33332,	// Leonardo_Duty_12P
+												 [Leonardo_Duty_15P].Freq1 = 5332, [Leonardo_Duty_15P].Freq2 = 6913,		// Leonardo_Duty_15P
+												 [Leonardo_Pattern_Q].Freq1 = 7999, [Leonardo_Pattern_Q].Freq2 = 7999,		// Leonardo_Pattern_Q
+
 												 [Leonardo_Duty_12P].Pulse1 = 4000, [Leonardo_Duty_12P].Pulse2 = 4000,		// 10 us
 												 [Leonardo_Duty_15P].Pulse1 = 800, [Leonardo_Duty_15P].Pulse2 = 800,		// 10 us
 												 [Leonardo_Pattern_Q].Pulse1 = 1600, [Leonardo_Pattern_Q].Pulse2 = 800,		// 20 us / 10 us (Pattern Q)
-
 											};
 
-CasesTypeDef CalibratedCasesLeonardo[19] = {
+CasesTypeDef CalibratedCasesLeonardo[NUMBER_OF_CASES] = {
+												 [Leonardo_TC1].Freq1 = 7999, [Leonardo_TC1].Freq2 = 7999,	// TC1 10kHz
+												 [Leonardo_TC2].Freq1 = 6666, [Leonardo_TC2].Freq2 = 6666,	// TC2 12kHz
+
+												 [Leonardo_TC1].Pulse1 = 800, [Leonardo_TC1].Pulse2 = 800,	// TC1 10us
+												 [Leonardo_TC2].Pulse1 = 800, [Leonardo_TC2].Pulse2 = 800,	// TC2 10us
+
 												 [Leonardo_Case1].Freq1 = 94117, [Leonardo_Case1].Freq2 = 41557,	// Leonardo_Case1 0.85kHz / 1.925kHz
 												 [Leonardo_Case2].Freq1 = 59258, [Leonardo_Case2].Freq2 = 44443,		// Leonardo_Case2 1.35kHz / 1.8kHz
 												 [Leonardo_Case3].Freq1 = 36116, [Leonardo_Case3].Freq2 = 59258,		// Leonardo_Case3 2.215kHz / 1.35kHz
@@ -96,7 +107,7 @@ CasesTypeDef CalibratedCasesLeonardo[19] = {
 												 [Leonardo_Case6].Pulse1 = 1600, [Leonardo_Case6].Pulse2 = 1600,
 												 [Leonardo_Case7].Pulse1 = 1600, [Leonardo_Case7].Pulse2 = 1600,
 
-												 [Leonardo_PRF1].Freq1 = 33332, [Leonardo_PRF1].Freq2 = 33332,		// Leonardo_PRF1
+												 [Leonardo_PRF1].Freq1 = 39999, [Leonardo_PRF1].Freq2 = 39999,		// Leonardo_PRF1
 												 [Leonardo_PRF2].Freq1 = 7999, [Leonardo_PRF2].Freq2 = 7999,		// Leonardo_PRF2
 												 [Leonardo_PRF3].Freq1 = 3999, [Leonardo_PRF3].Freq2 = 3999,		// Leonardo_PRF3
 												 [Leonardo_PRF4].Freq1 = 2666, [Leonardo_PRF4].Freq2 = 2666,		// Leonardo_PRF4
@@ -105,11 +116,6 @@ CasesTypeDef CalibratedCasesLeonardo[19] = {
 												 [Leonardo_PRF7].Freq1 = 1332, [Leonardo_PRF7].Freq2 = 1332,		// Leonardo_PRF7
 												 [Leonardo_PRF8].Freq1 = 1142, [Leonardo_PRF8].Freq2 = 1142,		// Leonardo_PRF8
 												 [Leonardo_PRF9].Freq1 = 1142, [Leonardo_PRF9].Freq2 = 1142,		// Leonardo_PRF9
-
-												 [Leonardo_Duty_12P].Freq1 = 33332, [Leonardo_Duty_12P].Freq2 = 33332,	// Leonardo_Duty_12P
-												 [Leonardo_Duty_15P].Freq1 = 5332, [Leonardo_Duty_15P].Freq2 = 6913,		// Leonardo_Duty_15P
-												 [Leonardo_Pattern_Q].Freq1 = 7999, [Leonardo_Pattern_Q].Freq2 = 7999,		// Leonardo_Pattern_Q
-
 
 												 [Leonardo_PRF1].Pulse1 = 4000, [Leonardo_PRF1].Pulse2 = 4000,		// 50 us
 												 [Leonardo_PRF2].Pulse1 = 960, [Leonardo_PRF2].Pulse2 = 960,		// 12 us
@@ -121,6 +127,10 @@ CasesTypeDef CalibratedCasesLeonardo[19] = {
 												 [Leonardo_PRF8].Pulse1 = 136, [Leonardo_PRF8].Pulse2 = 136,		// 1.7 us
 												 [Leonardo_PRF9].Pulse1 = 16, [Leonardo_PRF9].Pulse2 = 16,		// 0.2 us
 
+												 [Leonardo_Duty_12P].Freq1 = 33332, [Leonardo_Duty_12P].Freq2 = 33332,	// Leonardo_Duty_12P
+												 [Leonardo_Duty_15P].Freq1 = 5332, [Leonardo_Duty_15P].Freq2 = 6913,		// Leonardo_Duty_15P
+												 [Leonardo_Pattern_Q].Freq1 = 7999, [Leonardo_Pattern_Q].Freq2 = 7999,		// Leonardo_Pattern_Q
+
 												 [Leonardo_Duty_12P].Pulse1 = 4000, [Leonardo_Duty_12P].Pulse2 = 4000,		// 10 us
 												 [Leonardo_Duty_15P].Pulse1 = 800, [Leonardo_Duty_15P].Pulse2 = 800,		// 10 us
 												 [Leonardo_Pattern_Q].Pulse1 = 1600, [Leonardo_Pattern_Q].Pulse2 = 800,		// 20 us / 10 us (Pattern Q)
@@ -128,32 +138,33 @@ CasesTypeDef CalibratedCasesLeonardo[19] = {
 
 void ApplyFrequencyCalFactor(void)
 {
-	// adjust values with calibration factor
+	// adjust values with frequency calibration factor
 	for(int i = 0;i < (  (sizeof(UncalibratedCasesLeonardo)) / sizeof(UncalibratedCasesLeonardo[0])  ); i++)
 	{
-		CalibratedCasesLeonardo[i].Freq1 = UncalibratedCasesLeonardo[i].Freq1 * FrequencyCalibrationFactor;
-		CalibratedCasesLeonardo[i].Freq2 = UncalibratedCasesLeonardo[i].Freq2 * FrequencyCalibrationFactor;
-		CalibratedCasesLeonardo[i].Pulse1 = UncalibratedCasesLeonardo[i].Pulse1 * FrequencyCalibrationFactor;
-		CalibratedCasesLeonardo[i].Pulse2 = UncalibratedCasesLeonardo[i].Pulse2 * FrequencyCalibrationFactor;
+		CalibratedCasesLeonardo[i].Freq1 = round(UncalibratedCasesLeonardo[i].Freq1 * FrequencyCalibrationFactor);
+		CalibratedCasesLeonardo[i].Freq2 = round(UncalibratedCasesLeonardo[i].Freq2 * FrequencyCalibrationFactor);
+		CalibratedCasesLeonardo[i].Pulse1 = round(UncalibratedCasesLeonardo[i].Pulse1 * FrequencyCalibrationFactor);
+		CalibratedCasesLeonardo[i].Pulse2 = round(UncalibratedCasesLeonardo[i].Pulse2 * FrequencyCalibrationFactor);
 	}
 }
 
 void Apply_PW_Offsets(void)
 {
-	// adjust pulse width with offset
+	// adjust pulse width with offset and frequency calibration factor
 	for(int i = 0;i < (  (sizeof(UncalibratedCasesLeonardo)) / sizeof(UncalibratedCasesLeonardo[0])  ); i++)
 	{
-		CalibratedCasesLeonardo[i].Pulse1 = UncalibratedCasesLeonardo[i].Pulse1 * FrequencyCalibrationFactor + PulseWidthOffset;
-		CalibratedCasesLeonardo[i].Pulse2 = UncalibratedCasesLeonardo[i].Pulse2 * FrequencyCalibrationFactor + PulseWidthOffset;
+		CalibratedCasesLeonardo[i].Pulse1 = round(UncalibratedCasesLeonardo[i].Pulse1 * FrequencyCalibrationFactor + PulseWidthOffset);
+		CalibratedCasesLeonardo[i].Pulse2 = round(UncalibratedCasesLeonardo[i].Pulse2 * FrequencyCalibrationFactor + PulseWidthOffset);
 	}
 }
 
-void InitFrequency(void)
+void InitPatternGenerator(void)
 {
 	ApplyFrequencyCalFactor();
 	Apply_PW_Offsets();
 	//Initialise to Case1 and Freq1
-	CurrentCase = Leonardo_Case1;     // array index, actual Case is + 1
+	OLEDDisplayState = Leonardo_TC1;
+	CurrentCase = Leonardo_TC1;
 	CurrentFrequency = 1;
 }
 
@@ -163,7 +174,7 @@ void TIM3_IRQHandler(void)
 //	char PC_GUI_message[200] = {0};		// debug only
 //	extern UART_HandleTypeDef huart2; 	// debug only
 
-	// update period and pulse for TIM2
+	// cases with varying frequency (interval = 15 pulses)
 	if(CurrentCase >= Leonardo_Case1 && CurrentCase <= Leonardo_Case7)
 	{
 		ScopeTriggerFromISR();
@@ -181,7 +192,8 @@ void TIM3_IRQHandler(void)
 		TIM3->ARR = 14;
 	}
 
-	if(CurrentCase >= Leonardo_PRF1 && CurrentCase <= Leonardo_PRF9)
+	// cases with constant frequency and constant pulse
+	if((CurrentCase >= Leonardo_PRF1 && CurrentCase <= Leonardo_PRF9) || CurrentCase == Leonardo_Duty_12P || CurrentCase == Leonardo_TC1 || CurrentCase == Leonardo_TC2)
 	{
 		ScopeTriggerFromISR();
 
@@ -191,15 +203,16 @@ void TIM3_IRQHandler(void)
 	}
 
 
-	if(CurrentCase == Leonardo_Duty_12P)
-	{
-		ScopeTriggerFromISR();
+//	if(CurrentCase == Leonardo_Duty_12P)
+//	{
+//		ScopeTriggerFromISR();
+//
+//		TIM2->ARR = CalibratedCasesLeonardo[CurrentCase].Freq1;
+//		TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;  // capture/compare register used for pulse length
+//		TIM3->ARR = 14;	// arbitrary number
+//	}
 
-		TIM2->ARR = CalibratedCasesLeonardo[CurrentCase].Freq1;
-		TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;  // capture/compare register used for pulse length
-		TIM3->ARR = 14;	// arbitrary number
-	}
-
+	// case with varying frequency (custom interval)
 	if(CurrentCase == Leonardo_Duty_15P)
 	{
 		ScopeTriggerFromISR();
@@ -217,7 +230,7 @@ void TIM3_IRQHandler(void)
 		}
 	}
 
-	// update TIM3 "pulse counter" interrupt (for this ISR) and pulse width
+	// "hand made" pattern and scope trigger
 	if(CurrentCase == Leonardo_Pattern_Q)
 	{
 		//scope trigger
@@ -233,14 +246,14 @@ void TIM3_IRQHandler(void)
 		TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse2;
 	}
 
-//	  snprintf(PC_GUI_message, 200, " TIM2->CCR1 = %lu\n TIM3->ARR = %lu\n", TIM2->CCR1, TIM3->ARR);
-//	  HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message), 100);
+//	  snprintf(PC_GUI_message, 200, " TIM2->CCR1 = %lu\n TIM3->ARR = %lu\n", TIM2->CCR1, TIM3->ARR);	// debug only
+//	  HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message), 100);			// debug only
 
 	__HAL_TIM_CLEAR_IT(&htim3, TIM_IT_UPDATE); // not using HAL callback so it has to be done manually
 }
 
 /*
-// disabled here and in stm32l4xx_it.c due to scope trigger jitter - basic ISR work fine
+// This ISR callback below and ISR in stm32l4xx_it.c has been disabled due to scope trigger jitter - basic ISR work fine
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == &htim3)		// which timer triggered this function? At the moment there is only one anyway
@@ -299,22 +312,22 @@ void NextFrequency(void)
 {
 	CurrentCase++;
 	if(CurrentCase > NUMBER_OF_CASES - 1)
-		CurrentCase = NUMBER_OF_CASES - 1;
+		CurrentCase = 0;	// go to the beginning
 
 	OLEDDisplayState = CurrentCase;
 	OLEDupToDate = false;
-	Update_OLED_Display_Frequency(OLEDDisplayState);
+	OLED_Update_Display_Case(OLEDDisplayState);
 }
 
 void PreviousFrequency(void)
 {
 	CurrentCase--;
 	if(CurrentCase < 0)
-		CurrentCase = 0;
+		CurrentCase = NUMBER_OF_CASES - 1; 		// go to the last one
 
 	OLEDDisplayState = CurrentCase;
 	OLEDupToDate = false;
-	Update_OLED_Display_Frequency(OLEDDisplayState);
+	OLED_Update_Display_Case(OLEDDisplayState);
 }
 
 

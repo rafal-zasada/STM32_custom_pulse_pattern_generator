@@ -9,11 +9,11 @@
 #ifndef INC_CALIBRATION_H_
 #define INC_CALIBRATION_H_
 
-void InitCalibrationDataInFlash(void);
+void InitDataInFlashSettings(void);
 void SaveCalibrationFactorInFlash(void);
 void Freq_Calibration_Mode(void);
 void Pulse_Adjustment_Mode(void);
-float Read_Frequency_Calibration_Factor_From_Flash(void);
+float ReadFrequencyCalibrationFactorFromFlash(void);
 float ReadPulseWidthOffsetFromFlash(void);
 
 
