@@ -1,7 +1,6 @@
-freq_selection.c:138:6:ApplyFrequencyCalFactor	24	static
-freq_selection.c:150:6:Apply_PW_Offsets	24	static
-freq_selection.c:160:6:InitPatternGenerator	8	static
-freq_selection.c:171:6:TIM3_IRQHandler	16	static
-freq_selection.c:278:6:ScopeTriggerFromISR	4	static
-freq_selection.c:310:6:NextFrequency	8	static
-freq_selection.c:320:6:PreviousFrequency	8	static
+freq_selection.c:138:6:UpdateCalibratedCasesArray	24	static
+freq_selection.c:175:6:InitPatternGenerator	8	static
+freq_selection.c:186:6:TIM3_IRQHandler	16	static
+freq_selection.c:293:6:ScopeTriggerFromISR	4	static
+freq_selection.c:325:6:NextFrequency	8	static
+freq_selection.c:335:6:PreviousFrequency	8	static

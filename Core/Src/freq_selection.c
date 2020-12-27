@@ -135,7 +135,19 @@ CasesTypeDef CalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_Pattern_Q].Pulse1 = 1600, [Leonardo_Pattern_Q].Pulse2 = 800,		// 20 us / 10 us (Pattern Q)
 											};
 
-void ApplyFrequencyCalFactor(void)
+void UpdateCalibratedCasesArray(void)
+{
+	for(int i = 0;i < (  (sizeof(UncalibratedCasesLeonardo)) / sizeof(UncalibratedCasesLeonardo[0])  ); i++)
+	{
+		CalibratedCasesLeonardo[i].Freq1 = round(UncalibratedCasesLeonardo[i].Freq1 * FrequencyCalibrationFactor);
+		CalibratedCasesLeonardo[i].Freq2 = round(UncalibratedCasesLeonardo[i].Freq2 * FrequencyCalibrationFactor);
+		CalibratedCasesLeonardo[i].Pulse1 = round(UncalibratedCasesLeonardo[i].Pulse1 * FrequencyCalibrationFactor + PulseWidthOffset);
+		CalibratedCasesLeonardo[i].Pulse2 = round(UncalibratedCasesLeonardo[i].Pulse2 * FrequencyCalibrationFactor + PulseWidthOffset);
+	}
+}
+
+/*
+void ApplyFrequencyCalFactor(void) xxx
 {
 	// adjust values with frequency calibration factor
 	for(int i = 0;i < (  (sizeof(UncalibratedCasesLeonardo)) / sizeof(UncalibratedCasesLeonardo[0])  ); i++)
@@ -147,7 +159,7 @@ void ApplyFrequencyCalFactor(void)
 	}
 }
 
-void Apply_PW_Offsets(void)
+void Apply_PW_Offsets(void) xxx
 {
 	// adjust pulse width with offset and frequency calibration factor
 	for(int i = 0;i < (  (sizeof(UncalibratedCasesLeonardo)) / sizeof(UncalibratedCasesLeonardo[0])  ); i++)
@@ -156,11 +168,14 @@ void Apply_PW_Offsets(void)
 		CalibratedCasesLeonardo[i].Pulse2 = round(UncalibratedCasesLeonardo[i].Pulse2 * FrequencyCalibrationFactor + PulseWidthOffset);
 	}
 }
+*/
+
+
 
 void InitPatternGenerator(void)
 {
-	ApplyFrequencyCalFactor();
-	Apply_PW_Offsets();
+	UpdateCalibratedCasesArray();
+
 	//Initialise to Case1 and Freq1
 	OLEDDisplayState = Leonardo_TC1;
 	CurrentCase = Leonardo_TC1;

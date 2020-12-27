@@ -30,11 +30,11 @@ extern char PC_GUI_message[200];
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern float FrequencyCalibrationFactor;
-//extern UART_HandleTypeDef huart2; // for debug only
 extern OLEDStates_type OLEDDisplayState;
 extern float PulseWidthOffset;
 bool FrequencyCalibrationModeFlag;
 bool PulseOffsetAdjustmentModeFlag;
+//extern UART_HandleTypeDef huart2; // for debug only
 
 #define FREQUENCY_CF_UPPER_LIMIT  1.01	// 1%
 #define FREQUENCY_CF_LOWER_LIMIT  0.99	// 1%
@@ -61,17 +61,23 @@ void SaveCalibrationFactorInFlash()
 float ReadFrequencyCalibrationFactorFromFlash(void)
 {
 	uint32_t raw_value_calibration_factor = *(ptrCalibrationFactorInFlashAddress);
-	if(raw_value_calibration_factor == 0xFFFFFFFF)
-		raw_value_calibration_factor = 1000000; // if not programmed/saved yet then set to 1000000
-	return ((float)raw_value_calibration_factor / 1000000);
+	float calibration_factor = (float)raw_value_calibration_factor / 1000000;
+
+	if((calibration_factor > FREQUENCY_CF_UPPER_LIMIT) || (calibration_factor < FREQUENCY_CF_LOWER_LIMIT))
+		return 1;						 // if not programmed yet or unexpected value then set to default
+	else
+		return calibration_factor;
 }
 
 float ReadPulseWidthOffsetFromFlash(void)
 {
 	uint32_t raw_value_PW_offset_factor = *(ptrPulseWidthOffsetInFlashAddress);
-	if(raw_value_PW_offset_factor == 0xFFFFFFFF)
-		raw_value_PW_offset_factor = 0; // if not programmed/saved yet then set to 0
-	return ((float)raw_value_PW_offset_factor / 1000);
+	int32_t PW_Offset = round((float)raw_value_PW_offset_factor / 1000);
+
+	if((PW_Offset > PW_OFFSET_UPPER_LIMIT) || (PW_Offset < PW_OFFSET_LOWER_LIMIT))
+		return 0;						 // if not programmed yet or unexpected value then set to default
+	else
+		return PW_Offset;
 }
 
 static void UpdateFrequencyCalibrationDisplay(void)
@@ -160,7 +166,7 @@ void Freq_Calibration_Mode(void)
 
 	if(FrequencyCalibrationUpdated)
 	{
-		ApplyFrequencyCalFactor();
+		UpdateCalibratedCasesArray();
 		SaveCalibrationFactorInFlash();
 
 		// Calibration saved message on Display
@@ -239,7 +245,7 @@ void Pulse_Adjustment_Mode(void)
 
 	if(PW_OffsetUpdated)
 	{
-		Apply_PW_Offsets();
+		UpdateCalibratedCasesArray();
 		SaveCalibrationFactorInFlash();
 
 		// Calibration saved message on Display

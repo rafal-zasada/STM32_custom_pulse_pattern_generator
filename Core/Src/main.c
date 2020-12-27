@@ -134,14 +134,11 @@ int main(void)
   ssd1306_UpdateScreen();
   HAL_Delay(2500);
 
-
   InitDataInFlashSettings();
   FrequencyCalibrationFactor = ReadFrequencyCalibrationFactorFromFlash();
   PulseWidthOffset = ReadPulseWidthOffsetFromFlash();
   InitPatternGenerator();
   OLED_Update_Display_Case(OLEDDisplayState); //current case
-
-
 
 
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
