@@ -20,7 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
 /* USER CODE BEGIN 0 */
-//#include<stdint.h>  // for uint64_t
+#include<stdint.h>  // for uint64_t
 #include "freq_selection.h"
 #include <stdbool.h>
 #include <calibration.h>
@@ -142,6 +142,22 @@ void MX_GPIO_Init(void)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+	for(int i = 0; i < 30000; i++);			// about 3.7 ms delay
+
+	for(int i = 0; i < 100; i++)			// if none of EXTI are stable (noise) then return
+	{
+		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6) && HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) && HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) != 0)
+		{
+			__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
+			__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
+			__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_13);
+			__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_11);
+			return;
+		}
+
+	}
+
+
 	if(GPIO_Pin == GPIO_PIN_6)	// next case button pressed (PC6)
 	{
 		NextFrequency();
@@ -160,12 +176,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		TIM3->CNT = 0;							// avoid timer overflow when ARR register is changed
 	}
 
-	if(GPIO_Pin == GPIO_PIN_13)	// Frequency calibration button
+	if(GPIO_Pin == GPIO_PIN_13)	// Frequency calibration button (PC13)
 	{
 		FrequencyCalibrationModeFlag = true;
 	}
 
-	if(GPIO_Pin == GPIO_PIN_11)	// Pulse adjustment button
+
+	if(GPIO_Pin == GPIO_PIN_11)	// Pulse adjustment button (PA11)
 	{
 		PulseOffsetAdjustmentModeFlag = true;
 	}
