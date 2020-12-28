@@ -216,16 +216,6 @@ void TIM3_IRQHandler(void)
 		TIM3->ARR = 14;	// arbitrary number
 	}
 
-
-//	if(CurrentCase == Leonardo_Duty_12P)
-//	{
-//		ScopeTriggerFromISR();
-//
-//		TIM2->ARR = CalibratedCasesLeonardo[CurrentCase].Freq1;
-//		TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;  // capture/compare register used for pulse length
-//		TIM3->ARR = 14;	// arbitrary number
-//	}
-
 	// case with varying frequency (custom interval)
 	if(CurrentCase == Leonardo_Duty_15P)
 	{

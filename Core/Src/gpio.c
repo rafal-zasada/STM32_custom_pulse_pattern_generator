@@ -161,18 +161,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	if(GPIO_Pin == GPIO_PIN_6)	// next case button pressed (PC6)
 	{
 		NextFrequency();
-		for(int i = 0; i < 100000; i++); 		// about 14 ms debounce
+		for(int i = 0; i < 100000; i++); 	// about 14 ms debounce
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
-		TIM2->CNT = 0;							// avoid timer overflow when ARR register is changed
-		TIM3->CNT = 0;							// avoid timer overflow when ARR register is changed
+		TIM2->CNT = 0xFFFFFFFF - 100000;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 1.25 ms)
+		TIM3->CNT = 0;						// avoid missing timer set point (and overflow) when ARR register is changed
 	}
 
-	if(GPIO_Pin == GPIO_PIN_8)	// previous case down button pressed (PC8)
+	if(GPIO_Pin == GPIO_PIN_8)				// previous case down button pressed (PC8)
 	{
 		PreviousFrequency();
-		for(int i = 0; i < 100000; i++); // about 14 ms debounce
+		for(int i = 0; i < 100000; i++); 	// about 14 ms debounce
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
-		TIM2->CNT = 0;							// avoid timer overflow when ARR register is changed
+		TIM2->CNT = 0xFFFFFFFF - 100000;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 1.25 ms)
 		TIM3->CNT = 0;							// avoid timer overflow when ARR register is changed
 	}
 

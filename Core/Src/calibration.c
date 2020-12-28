@@ -122,7 +122,7 @@ void Freq_Calibration_Mode(void)
 	UpdateFrequencyCalibrationDisplay();
 	HAL_TIM_Base_Stop_IT(&htim3);	// stop frequency switching
 	TIM3->CNT = 0;
-	TIM2->CNT = 0;
+	TIM2->CNT = 0xFFFFFFFF - 100000;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 1.25 ms)
 	TIM2->ARR = round(CalibrationFrequency_ARR * FrequencyCalibrationFactor);	//Set timer2 period to 100us --> 10 kHz (calibration frequency)
 	TIM2->CCR1 = round(80 * FrequencyCalibrationFactor + PulseWidthOffset);  	//  1us nominal pulse width for frequency calibration
 
@@ -183,6 +183,7 @@ void Freq_Calibration_Mode(void)
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);	// buttons used here are used somewhere else as EXTI so any flags has to be cleared
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+	TIM2->CNT = 0xFFFFFFFF - 100000;
 	HAL_TIM_Base_Start_IT(&htim3); // start frequency switching
 }
 
@@ -200,7 +201,7 @@ void Pulse_Adjustment_Mode(void)
 
 	HAL_TIM_Base_Stop_IT(&htim3);	// stop frequency switching
 	TIM3->CNT = 0;
-	TIM2->CNT = 0;
+	TIM2->CNT = 0xFFFFFFFF - 100000;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 1.25 ms)
 	TIM2->ARR = round(7999 * FrequencyCalibrationFactor);	// frequency = 10 kHz (arbitrary number for pulse calibration)
 	TIM2->CCR1 = round(CalibrationPulseWidth_CCR1 * FrequencyCalibrationFactor + PulseWidthOffset);  // set pulse width
 
@@ -262,6 +263,7 @@ void Pulse_Adjustment_Mode(void)
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);	// buttons used here are used somewhere else as EXTI so it has to be cleared
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+	TIM2->CNT = 0xFFFFFFFF - 100000;
 	HAL_TIM_Base_Start_IT(&htim3); // start frequency switching
 }
 

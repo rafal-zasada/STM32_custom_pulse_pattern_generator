@@ -5,4 +5,4 @@ calibration.c:72:7:ReadPulseWidthOffsetFromFlash	24	static
 calibration.c:83:13:UpdateFrequencyCalibrationDisplay	24	static
 calibration.c:98:13:UpdatePulseAdjustmentDisplay	24	static
 calibration.c:113:6:Freq_Calibration_Mode	48	static
-calibration.c:190:6:Pulse_Adjustment_Mode	48	static
+calibration.c:191:6:Pulse_Adjustment_Mode	48	static
