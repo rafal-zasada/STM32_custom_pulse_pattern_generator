@@ -289,6 +289,8 @@ void NextFrequency(void)
 
 	OLEDDisplayState = CurrentCase;
 	OLED_Update_Display_Case(OLEDDisplayState);
+
+
 }
 
 void PreviousFrequency(void)
