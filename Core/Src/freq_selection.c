@@ -19,16 +19,11 @@ int Freq_2;
 int CurrentCase;
 int CurrentFrequency;
 float FrequencyCalibrationFactor;
-float PulseWidthOffset;						// temporary initialisation - later it will be read from flash
+float PulseWidthOffset;
 extern OLEDStates_type OLEDDisplayState;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim2;
 #define NUMBER_OF_CASES 21
-
-
-//typedef enum 	{Leonardo_Case1, Leonardo_Case2, Leonardo_Case3, Leonardo_Case4, Leonardo_Case5, Leonardo_Case6, Leonardo_Case7,
-//				Leonardo_PRF1, Leonardo_PRF2, Leonardo_PRF3, Leonardo_PRF4, Leonardo_PRF5, Leonardo_PRF6, Leonardo_PRF7, Leonardo_PRF8, Leonardo_PRF9,
-//				Leonardo_Duty_12P, Leonardo_Duty_15P, Leonardo_Pattern_Q} OLEDStates_type;
 
 //C99 style initialisation - timer (TIM2) settings for required frequencies are valid for main clock = 80MHz and pre-scaler = 0 (actual x1)
 CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
@@ -145,32 +140,6 @@ void UpdateCalibratedCasesArray(void)
 		CalibratedCasesLeonardo[i].Pulse2 = round(UncalibratedCasesLeonardo[i].Pulse2 * FrequencyCalibrationFactor + PulseWidthOffset);
 	}
 }
-
-/*
-void ApplyFrequencyCalFactor(void) xxx
-{
-	// adjust values with frequency calibration factor
-	for(int i = 0;i < (  (sizeof(UncalibratedCasesLeonardo)) / sizeof(UncalibratedCasesLeonardo[0])  ); i++)
-	{
-		CalibratedCasesLeonardo[i].Freq1 = round(UncalibratedCasesLeonardo[i].Freq1 * FrequencyCalibrationFactor);
-		CalibratedCasesLeonardo[i].Freq2 = round(UncalibratedCasesLeonardo[i].Freq2 * FrequencyCalibrationFactor);
-		CalibratedCasesLeonardo[i].Pulse1 = round(UncalibratedCasesLeonardo[i].Pulse1 * FrequencyCalibrationFactor);
-		CalibratedCasesLeonardo[i].Pulse2 = round(UncalibratedCasesLeonardo[i].Pulse2 * FrequencyCalibrationFactor);
-	}
-}
-
-void Apply_PW_Offsets(void) xxx
-{
-	// adjust pulse width with offset and frequency calibration factor
-	for(int i = 0;i < (  (sizeof(UncalibratedCasesLeonardo)) / sizeof(UncalibratedCasesLeonardo[0])  ); i++)
-	{
-		CalibratedCasesLeonardo[i].Pulse1 = round(UncalibratedCasesLeonardo[i].Pulse1 * FrequencyCalibrationFactor + PulseWidthOffset);
-		CalibratedCasesLeonardo[i].Pulse2 = round(UncalibratedCasesLeonardo[i].Pulse2 * FrequencyCalibrationFactor + PulseWidthOffset);
-	}
-}
-*/
-
-
 
 void InitPatternGenerator(void)
 {
