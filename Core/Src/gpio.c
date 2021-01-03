@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * File Name          : gpio.c
-  * Description        : This file provides code for the configuration
-  *                      of all used GPIO pins.
+  * @file    gpio.c
+  * @brief   This file provides code for the configuration
+  *          of all used GPIO pins.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under BSD 3-Clause license,
@@ -19,6 +19,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
+
 /* USER CODE BEGIN 0 */
 #include<stdint.h>  // for uint64_t
 #include "freq_selection.h"
@@ -130,10 +131,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
@@ -160,20 +161,22 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	if(GPIO_Pin == GPIO_PIN_6)	// next case button pressed (PC6)
 	{
+		TIM2->CNT = 0xFFFFFFFF - 10000;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 125 us)
+		TIM3->CNT = 0;						// avoid missing timer set point (and overflow) when ARR register is changed
 		NextFrequency();
 		for(int i = 0; i < 100000; i++); 	// about 14 ms debounce
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
-		TIM2->CNT = 0xFFFFFFFF - 100000;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 1.25 ms)
-		TIM3->CNT = 0;						// avoid missing timer set point (and overflow) when ARR register is changed
+
 	}
 
 	if(GPIO_Pin == GPIO_PIN_8)				// previous case down button pressed (PC8)
 	{
+		TIM2->CNT = 0xFFFFFFFF - 10000;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 125 us)
+		TIM3->CNT = 0;							// avoid timer overflow when ARR register is changed
 		PreviousFrequency();
 		for(int i = 0; i < 100000; i++); 	// about 14 ms debounce
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
-		TIM2->CNT = 0xFFFFFFFF - 100000;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 1.25 ms)
-		TIM3->CNT = 0;							// avoid timer overflow when ARR register is changed
+
 	}
 
 	if(GPIO_Pin == GPIO_PIN_13)	// Frequency calibration button (PC13)
