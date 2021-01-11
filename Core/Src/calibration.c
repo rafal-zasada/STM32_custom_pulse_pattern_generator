@@ -128,11 +128,6 @@ void Freq_Calibration_Mode(void)
 
 	while(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0)
 	{
-		//just for scope trigger output
-		GPIOC->BSRR |= (1u << 4); // set pin 4
-		for(int i = 0; i < 25; i++); // about 3 us
-		GPIOC->BSRR |= (1u << 20); // reset pin 4
-
 		Previous_Pin6_State = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6);
 		Previous_Pin8_State = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8);
 		for(int i = 0; i < 100000; i++); // wait between consecutive pin reads (above) to avoid bouncing around threshold (about 14 ms)
@@ -207,11 +202,6 @@ void Pulse_Adjustment_Mode(void)
 
 	while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0)
 	{
-		//just for scope trigger output
-		GPIOC->BSRR |= (1u << 4); // set pin 4
-		for(int i = 0; i < 25; i++); // about 3 us
-		GPIOC->BSRR |= (1u << 20); // reset pin 4
-
 		Previous_Pin6_State = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6);
 		Previous_Pin8_State = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8);
 
@@ -234,7 +224,7 @@ void Pulse_Adjustment_Mode(void)
 			if(PulseWidthOffset < PW_OFFSET_LOWER_LIMIT) PulseWidthOffset = PW_OFFSET_LOWER_LIMIT; // limit offset
 			Previous_Pin8_State = 0;
 			TIM2->CNT = 0;
-			TIM2->CCR1 = round(CalibrationPulseWidth_CCR1 - PulseWidthOffset);
+			TIM2->CCR1 = round(CalibrationPulseWidth_CCR1 * FrequencyCalibrationFactor + PulseWidthOffset);
 			UpdatePulseAdjustmentDisplay();
 			PW_OffsetUpdated = true;
 		}
