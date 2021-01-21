@@ -70,7 +70,7 @@ CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_PRF9].Pulse1 = 16, [Leonardo_PRF9].Pulse2 = 16,		// 0.2 us
 
 												 [Leonardo_Duty_12P].Freq1 = 33332, [Leonardo_Duty_12P].Freq2 = 33332,	// Leonardo_Duty_12P
-												 [Leonardo_Duty_15P].Freq1 = 5332, [Leonardo_Duty_15P].Freq2 = 6913,		// Leonardo_Duty_15P
+												 [Leonardo_Duty_15P].Freq1 = 6913, [Leonardo_Duty_15P].Freq2 = 5332,		// Leonardo_Duty_15P
 												 [Leonardo_Pattern_Q].Freq1 = 7999, [Leonardo_Pattern_Q].Freq2 = 7999,		// Leonardo_Pattern_Q
 
 												 [Leonardo_Duty_12P].Pulse1 = 4000, [Leonardo_Duty_12P].Pulse2 = 4000,		// 10 us
@@ -122,7 +122,7 @@ CasesTypeDef CalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_PRF9].Pulse1 = 16, [Leonardo_PRF9].Pulse2 = 16,		// 0.2 us
 
 												 [Leonardo_Duty_12P].Freq1 = 33332, [Leonardo_Duty_12P].Freq2 = 33332,	// Leonardo_Duty_12P
-												 [Leonardo_Duty_15P].Freq1 = 5332, [Leonardo_Duty_15P].Freq2 = 6913,		// Leonardo_Duty_15P
+												 [Leonardo_Duty_15P].Freq1 = 6913, [Leonardo_Duty_15P].Freq2 = 5332,		// Leonardo_Duty_15P
 												 [Leonardo_Pattern_Q].Freq1 = 7999, [Leonardo_Pattern_Q].Freq2 = 7999,		// Leonardo_Pattern_Q
 
 												 [Leonardo_Duty_12P].Pulse1 = 4000, [Leonardo_Duty_12P].Pulse2 = 4000,		// 10 us
