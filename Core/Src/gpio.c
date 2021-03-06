@@ -22,10 +22,11 @@
 
 /* USER CODE BEGIN 0 */
 #include<stdint.h>  // for uint64_t
-#include "freq_selection.h"
 #include <stdbool.h>
 #include <calibration.h>
+#include <generator_control.h>
 #include "gpio.h"
+#include "OLED_display_state.h"
 
 /* USER CODE END 0 */
 
@@ -35,6 +36,8 @@
 /* USER CODE BEGIN 1 */
   extern bool FrequencyCalibrationModeFlag;
   extern bool PulseOffsetAdjustmentModeFlag;
+  extern int OutputState;
+  extern TIM_HandleTypeDef htim2;
 /* USER CODE END 1 */
 
 /** Configure pins as
@@ -64,7 +67,7 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
                           |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8
-                          |GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_15, GPIO_PIN_RESET);
+                          |GPIO_PIN_9|GPIO_PIN_12|GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_10
@@ -89,10 +92,10 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : PA1 PA2 PA3 PA4
                            PA5 PA6 PA7 PA8
-                           PA9 PA10 PA12 PA15 */
+                           PA9 PA12 PA15 */
   GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
                           |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8
-                          |GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_15;
+                          |GPIO_PIN_9|GPIO_PIN_12|GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -124,8 +127,8 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA11 */
-  GPIO_InitStruct.Pin = GPIO_PIN_11;
+  /*Configure GPIO pins : PA10 PA11 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -145,19 +148,41 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	for(int i = 0; i < 30000; i++);			// about 3.7 ms delay
 
-	for(int i = 0; i < 100; i++)			// if none of EXTI are stable (noise) then return
+	for(int i = 0; i < 100; i++)			// if none of EXTI are stable (continuously low) then return
 	{
-		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6) && HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) && HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) != 0)
+		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6) && HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8)
+				&& HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10) != 0)
 		{
 			__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
 			__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
 			__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_13);
 			__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_11);
+			__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_10);
 			return;
 		}
-
 	}
 
+	if(GPIO_Pin == GPIO_PIN_10)	// output ON/OFF button pressed
+	{
+		if(OutputState == OutputON)
+		{
+			TIM2->CNT = 0xFFFFFFFF - 10000;	// set TIM2 PWM to "safe" pulseOFF area
+			HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);
+			OutputState = OutputOFF;
+		}
+		else if(OutputState == OutputOFF)
+		{
+			TIM2->CNT = 0xFFFFFFFF - 10000;	// set TIM2 PWM to "safe" pulseOFF area
+			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+			OutputState = OutputON;
+		}
+
+		TIM3->CNT = 0; 	// reset switching counter
+
+
+		HAL_NVIC_SetPendingIRQ(TIM3_IRQn); 			// force TIM3 interrupt to update TIM2 PWM settings
+		OLED_Update_Display_Case(OLEDDisplayState);	// this also works as a debouncing delay
+	}
 
 	if(GPIO_Pin == GPIO_PIN_6)	// next case button pressed (PC6)
 	{
@@ -165,8 +190,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		TIM3->CNT = 0;						// avoid missing timer set point (and overflow) when ARR register is changed
 		NextFrequency();
 		for(int i = 0; i < 100000; i++); 	// about 14 ms debounce
-		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
-
 	}
 
 	if(GPIO_Pin == GPIO_PIN_8)				// previous case down button pressed (PC8)
@@ -175,8 +198,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		TIM3->CNT = 0;							// avoid timer overflow when ARR register is changed
 		PreviousFrequency();
 		for(int i = 0; i < 100000; i++); 	// about 14 ms debounce
-		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
-
 	}
 
 	if(GPIO_Pin == GPIO_PIN_13)	// Frequency calibration button (PC13)
@@ -191,7 +212,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 
 
-	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin); // clear interrupt manually again (it is done already in library function before this callback function but interrupt can occur again when this function is running).
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin); // clear interrupt manually again (it is done already in library function before this callback function (and here in some cases) but interrupt can occur again when this function is running).
 }
 
 /* USER CODE END 2 */

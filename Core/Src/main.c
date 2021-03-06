@@ -33,7 +33,7 @@
 #include "calibration.h"
 #include "ssd1306_tests.h"
 #include "ssd1306.h"
-#include "freq_selection.h"
+#include "generator_control.h"
 #include "OLED_display_state.h"
 
 

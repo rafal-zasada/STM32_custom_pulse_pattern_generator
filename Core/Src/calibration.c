@@ -14,7 +14,7 @@
 #include <math.h>
 #include "stm32l4xx_hal.h"
 #include "tim.h"
-#include "freq_selection.h"
+#include "generator_control.h"
 #include "ssd1306.h"
 #include "OLED_display_state.h"
 

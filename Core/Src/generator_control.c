@@ -10,12 +10,12 @@
 #include <math.h>
 #include <stdbool.h>
 #include "stm32l4xx_hal.h"
-#include "freq_selection.h"
+#include "generator_control.h"
 #include "OLED_display_state.h"
 
 
-int Freq_1;
-int Freq_2;
+//int Freq_1;
+//int Freq_2;
 int CurrentCase;
 int CurrentFrequency;
 float FrequencyCalibrationFactor;
@@ -23,7 +23,8 @@ float PulseWidthOffset;
 extern OLEDStates_type OLEDDisplayState;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim2;
-#define NUMBER_OF_CASES 21
+#define NUMBER_OF_CASES 23
+int OutputState = OutputON;
 
 //C99 style initialisation - timer (TIM2) settings for required frequencies are valid for main clock = 80MHz and pre-scaler = 0 (actual x1)
 CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
@@ -40,6 +41,8 @@ CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_Case5].Freq1 = 35555, [Leonardo_Case5].Freq2 = 59258,		// Leonardo_Case5 2.25kHz / 1.35kHz
 												 [Leonardo_Case6].Freq1 = 56337, [Leonardo_Case6].Freq2 = 20355,		// Leonardo_Case6 1.42kHz / 3.93kHz
 												 [Leonardo_Case7].Freq1 = 94117, [Leonardo_Case7].Freq2 = 13332,		// Leonardo_Case7 0.85kHz / 6kHz
+												 [Leonardo_Case8].Freq1 = 24614, [Leonardo_Case8].Freq2 = 13604,		// Leonardo_Case8 3.25kHz / 5.88kHz
+												 [Leonardo_Case9].Freq1 = 24614, [Leonardo_Case9].Freq2 = 88888,		// Leonardo_Case9 3.25kHz / 0.90kHz
 
 												 [Leonardo_Case1].Pulse1 = 1600, [Leonardo_Case1].Pulse2 = 1600,		// 20us
 												 [Leonardo_Case2].Pulse1 = 1600, [Leonardo_Case2].Pulse2 = 1600,
@@ -48,6 +51,10 @@ CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_Case5].Pulse1 = 1600, [Leonardo_Case5].Pulse2 = 1600,
 												 [Leonardo_Case6].Pulse1 = 1600, [Leonardo_Case6].Pulse2 = 1600,
 												 [Leonardo_Case7].Pulse1 = 1600, [Leonardo_Case7].Pulse2 = 1600,
+												 [Leonardo_Case8].Pulse1 = 1600, [Leonardo_Case8].Pulse2 = 1600,
+												 [Leonardo_Case9].Pulse1 = 1600, [Leonardo_Case9].Pulse2 = 1600,
+
+
 
 												 [Leonardo_PRF1].Freq1 = 39999, [Leonardo_PRF1].Freq2 = 39999,		// Leonardo_PRF1
 												 [Leonardo_PRF2].Freq1 = 7999, [Leonardo_PRF2].Freq2 = 7999,		// Leonardo_PRF2
@@ -80,7 +87,7 @@ CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 
 CasesTypeDef CalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_TC1].Freq1 = 7999, [Leonardo_TC1].Freq2 = 7999,	// TC1 10kHz
-												 [Leonardo_TC2].Freq1 = 6666, [Leonardo_TC2].Freq2 = 6666,	// TC2 12kHz
+														 [Leonardo_TC2].Freq1 = 6666, [Leonardo_TC2].Freq2 = 6666,	// TC2 12kHz
 
 												 [Leonardo_TC1].Pulse1 = 800, [Leonardo_TC1].Pulse2 = 800,	// TC1 10us
 												 [Leonardo_TC2].Pulse1 = 800, [Leonardo_TC2].Pulse2 = 800,	// TC2 10us
@@ -92,6 +99,8 @@ CasesTypeDef CalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_Case5].Freq1 = 35555, [Leonardo_Case5].Freq2 = 59258,		// Leonardo_Case5 2.25kHz / 1.35kHz
 												 [Leonardo_Case6].Freq1 = 56337, [Leonardo_Case6].Freq2 = 20355,		// Leonardo_Case6 1.42kHz / 3.93kHz
 												 [Leonardo_Case7].Freq1 = 94117, [Leonardo_Case7].Freq2 = 13332,		// Leonardo_Case7 0.85kHz / 6kHz
+												 [Leonardo_Case8].Freq1 = 24614, [Leonardo_Case8].Freq2 = 13604,		// Leonardo_Case8 3.25kHz / 5.88kHz
+												 [Leonardo_Case9].Freq1 = 24614, [Leonardo_Case9].Freq2 = 88888,		// Leonardo_Case9 3.25kHz / 0.90kHz
 
 												 [Leonardo_Case1].Pulse1 = 1600, [Leonardo_Case1].Pulse2 = 1600,		// 20us
 												 [Leonardo_Case2].Pulse1 = 1600, [Leonardo_Case2].Pulse2 = 1600,
@@ -100,6 +109,10 @@ CasesTypeDef CalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_Case5].Pulse1 = 1600, [Leonardo_Case5].Pulse2 = 1600,
 												 [Leonardo_Case6].Pulse1 = 1600, [Leonardo_Case6].Pulse2 = 1600,
 												 [Leonardo_Case7].Pulse1 = 1600, [Leonardo_Case7].Pulse2 = 1600,
+												 [Leonardo_Case8].Pulse1 = 1600, [Leonardo_Case8].Pulse2 = 1600,
+												 [Leonardo_Case9].Pulse1 = 1600, [Leonardo_Case9].Pulse2 = 1600,
+
+
 
 												 [Leonardo_PRF1].Freq1 = 39999, [Leonardo_PRF1].Freq2 = 39999,		// Leonardo_PRF1
 												 [Leonardo_PRF2].Freq1 = 7999, [Leonardo_PRF2].Freq2 = 7999,		// Leonardo_PRF2
@@ -158,7 +171,7 @@ void TIM3_IRQHandler(void)
 //	extern UART_HandleTypeDef huart2; 	// debug only
 
 	// cases with varying frequency (interval = 15 pulses)
-	if(CurrentCase >= Leonardo_Case1 && CurrentCase <= Leonardo_Case7)
+	if(CurrentCase >= Leonardo_Case1 && CurrentCase <= Leonardo_Case9)
 	{
 		ScopeTriggerFromISR();
 

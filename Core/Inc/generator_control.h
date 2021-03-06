@@ -16,6 +16,9 @@ typedef struct
 	unsigned int Pulse2;
 }CasesTypeDef;
 
+#define OutputON 1
+#define OutputOFF 0
+
 void InitPatternGenerator(void);
 void NextFrequency(void);
 void PreviousFrequency(void);
