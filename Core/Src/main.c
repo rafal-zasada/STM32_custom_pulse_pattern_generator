@@ -113,6 +113,7 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_I2C3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
   //snprintf(PC_GUI_message, 200, "System Clock = %lu\n",  SystemCoreClock);					// debug only

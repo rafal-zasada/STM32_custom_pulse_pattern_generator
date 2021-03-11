@@ -14,6 +14,7 @@
 OLEDStates_type OLEDDisplayState = Leonardo_Case1;
 extern int CurrentCase;
 extern int OutputState;
+extern int NumberOfPulses;
 
 // not used
 //static void DrawSplitLine(void)
@@ -37,17 +38,28 @@ static void OLED_WriteCaseNumber(void)
 
 void OLED_Update_Display_Case(OLEDStates_type State)
 {
+	char StringBuffer[20] = {0};
+
 	ssd1306_Fill(Black);
 	ssd1306_SetCursor(93, 3);
 
-	if(OutputState == OutputON)
+	if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz)
 	{
-		ssd1306_WriteString("ON", Font_11x18, White);
+		ssd1306_WriteString("TRG", Font_11x18, White);
 	}
-	if(OutputState == OutputOFF)
+
+	else
 	{
-		ssd1306_WriteString("OFF", Font_11x18, White);
+		if(OutputState == OutputON)
+		{
+			ssd1306_WriteString("ON", Font_11x18, White);
+		}
+		if(OutputState == OutputOFF)
+		{
+			ssd1306_WriteString("OFF", Font_11x18, White);
+		}
 	}
+
 
 	ssd1306_SetCursor(0, 0);
 
@@ -284,6 +296,28 @@ void OLED_Update_Display_Case(OLEDStates_type State)
 		ssd1306_WriteString("PW1= 20 us", Font_7x10, White);
 		ssd1306_SetCursor(0, 53);
 		ssd1306_WriteString("PW2= 10 us", Font_7x10, White);
+		break;
+
+	case Leonardo_Burst_18u_10kHz:
+		ssd1306_WriteString("B 18u", Font_16x26, White);
+		ssd1306_SetCursor(0, 29);
+		ssd1306_WriteString("PRF= 10 kHz", Font_7x10, White);
+		ssd1306_SetCursor(0, 41);
+		snprintf(StringBuffer, sizeof(StringBuffer), "count= %d", NumberOfPulses);
+		ssd1306_WriteString(StringBuffer, Font_7x10, White);
+//		ssd1306_SetCursor(0, 53);
+//		ssd1306_WriteString("DUTY= 1.4 %", Font_7x10, White);
+		break;
+
+	case Leonardo_Burst_20u_10kHz:
+		ssd1306_WriteString("B 20u", Font_16x26, White);
+		ssd1306_SetCursor(0, 29);
+		ssd1306_WriteString("PRF= 10 kHz", Font_7x10, White);
+		ssd1306_SetCursor(0, 41);
+		snprintf(StringBuffer, sizeof(StringBuffer), "count= %d", NumberOfPulses);
+		ssd1306_WriteString(StringBuffer, Font_7x10, White);
+//		ssd1306_SetCursor(0, 53);
+//		ssd1306_WriteString("DUTY= 1.4 %", Font_7x10, White);
 		break;
 
 	default:
