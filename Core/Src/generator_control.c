@@ -23,9 +23,9 @@ float PulseWidthOffset;
 extern OLEDStates_type OLEDDisplayState;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim2;
-#define NUMBER_OF_CASES 25
+extern TIM_HandleTypeDef htim4;
 int OutputState = OutputON;
-int NumberOfPulses = 15; // for test
+int NumberOfPulses = 10; // for test
 
 //C99 style initialisation - timer (TIM2) settings for required frequencies are valid for main clock = 80MHz and pre-scaler = 0 (actual x1)
 CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
@@ -152,8 +152,8 @@ CasesTypeDef CalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_Burst_18u_10kHz].Freq1 = 7999, [Leonardo_Burst_18u_10kHz].Freq2 = 7999,		// 10 kHz
 												 [Leonardo_Burst_20u_10kHz].Freq1 = 7999, [Leonardo_Burst_20u_10kHz].Freq2 = 7999,		// 10 kHz
 
-												 [Leonardo_Burst_18u_10kHz].Pulse1 = 1440, [Leonardo_Burst_18u_10kHz].Pulse2 = 1440,		// 10 us
-												 [Leonardo_Burst_20u_10kHz].Pulse1 = 1600, [Leonardo_Burst_20u_10kHz].Pulse2 = 1600,		// 10 us
+												 [Leonardo_Burst_18u_10kHz].Pulse1 = 1440, [Leonardo_Burst_18u_10kHz].Pulse2 = 1440,		//
+												 [Leonardo_Burst_20u_10kHz].Pulse1 = 1600, [Leonardo_Burst_20u_10kHz].Pulse2 = 1600,		//
 											};
 
 void UpdateCalibratedCasesArray(void)
@@ -251,17 +251,13 @@ void TIM3_IRQHandler(void)
 		for(int i = 0; i < 250; i++); // about 30 us - dirty solution to complete PWM pulse !!!
 		TIM2->CNT = 0xFFFFFFFF - 10000;	// safe off pulse area
 		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);	// stop pulse generator
-	//	TIM3->CNT = 0; 	// reset switching counter !?!?!?!?
 
-		//scope trigger
-		GPIOC->BSRR |= (1u << 4); // set pin 4
-		for(int i = 0; i < 25; i++); // about 3 us
-		GPIOC->BSRR |= (1u << 20); // reset pin 4
+
 	}
 
-
-//	  snprintf(PC_GUI_message, 200, " TIM2->CCR1 = %lu\n TIM3->ARR = %lu\n", TIM2->CCR1, TIM3->ARR);	// debug only
-//	  HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message) + 1, 100);			// debug only
+		// debug
+		// snprintf(PC_GUI_message, 200, " TIM2->CCR1 = %lu\n TIM3->ARR = %lu\n", TIM2->CCR1, TIM3->ARR);
+		// HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message) + 1, 100);
 
 	__HAL_TIM_CLEAR_IT(&htim3, TIM_IT_UPDATE); // not using HAL callback so it has to be done manually
 }
@@ -315,23 +311,18 @@ void NextFrequency(void)
 	if(CurrentCase > NUMBER_OF_CASES - 1)
 		CurrentCase = 0;	// go to the beginning
 
-	OLEDDisplayState = CurrentCase;
-	OLED_Update_Display_Case(OLEDDisplayState);
-
 	if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz)
 	{
+		GPIOC->BSRR |= (1u << 20); // reset pin 4 (scope trigger)
+
 		TIM2->CNT = 0xFFFFFFFF - 10000;	// safe off pulse area
 		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);	// stop pulse generator. PWM output must be pulled down !
 		//HAL_TIM_Base_Stop(&htim2);	// stop pulse generator - what is the difference?
 		OutputState = OutputOFF;
-
-		TIM2->CCMR1 &= ~TIM_CCMR1_OC1PE; // disable output compare 1 preload to update pulse width immediately
-		TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;
-		TIM2->CCMR1 |= TIM_CCMR1_OC1PE; // re-reable output compare 1 preload
-
-		TIM2->ARR = CalibratedCasesLeonardo[CurrentCase].Freq1;
-		TIM3->ARR = NumberOfPulses - 1;  // pulse generator will be stopped in TIM3 ISR
 	}
+
+	OLEDDisplayState = CurrentCase;
+	OLED_Update_Display_Case(OLEDDisplayState);
 }
 
 void PreviousFrequency(void)
@@ -340,19 +331,21 @@ void PreviousFrequency(void)
 	if(CurrentCase < 0)
 		CurrentCase = NUMBER_OF_CASES - 1; 		// go to the last one
 
-	OLEDDisplayState = CurrentCase;
-	OLED_Update_Display_Case(OLEDDisplayState);
-
 	if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz)
 	{
+		GPIOC->BSRR |= (1u << 20); // reset pin 4 (scope trigger)
+
 		TIM2->CNT = 0xFFFFFFFF - 10000;	// safe off pulse area
 		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);	// stop pulse generator. PWM output must be pulled down !
 		//HAL_TIM_Base_Stop(&htim2);	// stop pulse generator - what is the difference?
 		OutputState = OutputOFF;
-		TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;
-		TIM2->ARR = CalibratedCasesLeonardo[CurrentCase].Freq1;
-		TIM3->ARR = NumberOfPulses - 1;  // pulse generator will be stopped in TIM3 ISR
 	}
+
+	OLEDDisplayState = CurrentCase;
+	OLED_Update_Display_Case(OLEDDisplayState);
 }
+
+
+
 
 

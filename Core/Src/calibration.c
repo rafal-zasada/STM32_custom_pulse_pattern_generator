@@ -34,6 +34,7 @@ extern OLEDStates_type OLEDDisplayState;
 extern float PulseWidthOffset;
 bool FrequencyCalibrationModeFlag;
 bool PulseOffsetAdjustmentModeFlag;
+extern int CurrentCase;
 //extern UART_HandleTypeDef huart2; // for debug only
 
 #define FREQUENCY_CF_UPPER_LIMIT  1.01	// 1%
@@ -112,6 +113,24 @@ static void UpdatePulseAdjustmentDisplay(void)
 
 void Freq_Calibration_Mode(void)
 {
+	if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz)
+	{
+		ssd1306_Fill(Black);
+		ssd1306_SetCursor(0, 0);
+		ssd1306_WriteString("FIRST SET", Font_7x10, White);
+		ssd1306_SetCursor(0, 14);
+		ssd1306_WriteString("NON BURST CASE", Font_7x10, White);
+		ssd1306_SetCursor(0, 28);
+		ssd1306_WriteString("", Font_7x10, White);
+		ssd1306_SetCursor(0, 44);
+		ssd1306_UpdateScreen();
+		HAL_Delay(2000);
+		OLED_Update_Display_Case(OLEDDisplayState);
+		FrequencyCalibrationModeFlag = false;
+
+		return;
+	}
+
 	bool FrequencyCalibrationUpdated = false;
 	bool Previous_Pin6_State = 1;
 	bool Previous_Pin8_State = 1;
@@ -172,6 +191,7 @@ void Freq_Calibration_Mode(void)
 		ssd1306_WriteString("   SAVED", Font_11x18, White);
 		ssd1306_UpdateScreen();
 		HAL_Delay(2000);
+		OLED_Update_Display_Case(OLEDDisplayState);
 	}
 
 	OLED_Update_Display_Case(OLEDDisplayState);
@@ -185,6 +205,24 @@ void Freq_Calibration_Mode(void)
 
 void Pulse_Adjustment_Mode(void)
 {
+	if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz)
+	{
+		ssd1306_Fill(Black);
+		ssd1306_SetCursor(0, 0);
+		ssd1306_WriteString("FIRST SET", Font_7x10, White);
+		ssd1306_SetCursor(0, 14);
+		ssd1306_WriteString("NON BURST CASE", Font_7x10, White);
+		ssd1306_SetCursor(0, 28);
+		ssd1306_WriteString("", Font_7x10, White);
+		ssd1306_SetCursor(0, 44);
+		ssd1306_UpdateScreen();
+		HAL_Delay(2500);
+		OLED_Update_Display_Case(OLEDDisplayState);
+		PulseOffsetAdjustmentModeFlag = false;
+
+		return;
+	}
+
 	bool PW_OffsetUpdated = false;
 	bool Previous_Pin6_State = 1;
 	bool Previous_Pin8_State = 1;

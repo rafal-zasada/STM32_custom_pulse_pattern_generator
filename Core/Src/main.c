@@ -69,6 +69,9 @@
   extern bool FrequencyCalibrationModeFlag;
   extern bool PulseOffsetAdjustmentModeFlag;
 
+  // debug
+  extern int NumberOfPulses;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -89,6 +92,8 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+	int PreviousNumberOfPulses = 10;
 
   /* USER CODE END 1 */
 
@@ -167,6 +172,33 @@ int main(void)
     {
     	Pulse_Adjustment_Mode();
     }
+
+    if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz)
+    {
+    	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
+        NumberOfPulses = htim4.Instance->CNT / 2;
+
+    	if(NumberOfPulses < 2 || NumberOfPulses > 30000) // htim4.Instance->CNT underflows to 32767
+    	{
+    		NumberOfPulses =  2;
+    		htim4.Instance->CNT = 4; // times 2 due to division above
+    	}
+
+    	if(NumberOfPulses > 500)
+    	{
+    		NumberOfPulses =  500;
+    		htim4.Instance->CNT = 1000; // times 2 due to division above
+    	}
+
+    	if(NumberOfPulses != PreviousNumberOfPulses)
+    	{
+        	OLED_Update_Display_Case(OLEDDisplayState);
+        	PreviousNumberOfPulses = NumberOfPulses;
+    	}
+    }
+
+    else
+    	HAL_TIM_Encoder_Stop(&htim4, TIM_CHANNEL_ALL); // ??????
 
     /* USER CODE END WHILE */
 

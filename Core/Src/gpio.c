@@ -39,6 +39,8 @@
   extern int OutputState;
   extern TIM_HandleTypeDef htim2;
   extern int CurrentCase;
+  extern CasesTypeDef CalibratedCasesLeonardo[NUMBER_OF_CASES];
+  extern int NumberOfPulses;
 /* USER CODE END 1 */
 
 /** Configure pins as
@@ -216,6 +218,19 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	{
 		if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz)
 		{
+			TIM3->CNT = 0;
+
+			TIM2->CCMR1 &= ~TIM_CCMR1_OC1PE; // disable output compare 1 preload to update pulse width immediately
+			TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;
+			TIM2->CCMR1 |= TIM_CCMR1_OC1PE; // re-reable output compare 1 preload
+			TIM2->ARR = CalibratedCasesLeonardo[CurrentCase].Freq1;
+			TIM3->ARR = NumberOfPulses - 1;  // pulse generator will be stopped in TIM3 ISR
+
+			//scope trigger
+			GPIOC->BSRR |= (1u << 4); // set pin 4
+			for(int i = 0; i < 25; i++); // about 3 us
+			GPIOC->BSRR |= (1u << 20); // reset pin 4
+
 			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 		}
 	}
