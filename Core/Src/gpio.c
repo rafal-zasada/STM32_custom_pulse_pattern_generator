@@ -165,7 +165,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		}
 	}
 
-	if(GPIO_Pin == GPIO_PIN_10)	// output ON/OFF button pressed
+	if(GPIO_Pin == GPIO_PIN_10 && CurrentCase != Leonardo_Burst_18u_10kHz && CurrentCase != Leonardo_Burst_20u_10kHz)	// output ON/OFF button pressed (not used for burst modes)
 	{
 		if(OutputState == OutputON)
 		{
@@ -181,8 +181,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		}
 
 		TIM3->CNT = 0; 	// reset switching counter
-
-
 		HAL_NVIC_SetPendingIRQ(TIM3_IRQn); 			// force TIM3 interrupt to update TIM2 PWM settings
 		OLED_Update_Display_Case(OLEDDisplayState);	// this also works as a debouncing delay
 	}

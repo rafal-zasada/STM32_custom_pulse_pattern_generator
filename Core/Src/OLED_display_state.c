@@ -301,23 +301,19 @@ void OLED_Update_Display_Case(OLEDStates_type State)
 	case Leonardo_Burst_18u_10kHz:
 		ssd1306_WriteString("B 18u", Font_16x26, White);
 		ssd1306_SetCursor(0, 29);
-		ssd1306_WriteString("PRF= 10 kHz", Font_7x10, White);
-		ssd1306_SetCursor(0, 41);
 		snprintf(StringBuffer, sizeof(StringBuffer), "count= %d", NumberOfPulses);
-		ssd1306_WriteString(StringBuffer, Font_7x10, White);
-//		ssd1306_SetCursor(0, 53);
-//		ssd1306_WriteString("DUTY= 1.4 %", Font_7x10, White);
+		ssd1306_WriteString(StringBuffer, Font_11x18, White);
+		ssd1306_SetCursor(0, 52);
+		ssd1306_WriteString("PRF= 10 kHz", Font_7x10, White);
 		break;
 
 	case Leonardo_Burst_20u_10kHz:
 		ssd1306_WriteString("B 20u", Font_16x26, White);
 		ssd1306_SetCursor(0, 29);
-		ssd1306_WriteString("PRF= 10 kHz", Font_7x10, White);
-		ssd1306_SetCursor(0, 41);
 		snprintf(StringBuffer, sizeof(StringBuffer), "count= %d", NumberOfPulses);
-		ssd1306_WriteString(StringBuffer, Font_7x10, White);
-//		ssd1306_SetCursor(0, 53);
-//		ssd1306_WriteString("DUTY= 1.4 %", Font_7x10, White);
+		ssd1306_WriteString(StringBuffer, Font_11x18, White);
+		ssd1306_SetCursor(0, 52);
+		ssd1306_WriteString("PRF= 10 kHz", Font_7x10, White);
 		break;
 
 	default:
