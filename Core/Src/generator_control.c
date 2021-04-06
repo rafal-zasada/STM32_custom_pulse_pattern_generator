@@ -42,8 +42,8 @@ CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_Case5].Freq1 = 35555, [Leonardo_Case5].Freq2 = 59258,		// Leonardo_Case5 2.25kHz / 1.35kHz
 												 [Leonardo_Case6].Freq1 = 56337, [Leonardo_Case6].Freq2 = 20355,		// Leonardo_Case6 1.42kHz / 3.93kHz
 												 [Leonardo_Case7].Freq1 = 94117, [Leonardo_Case7].Freq2 = 13332,		// Leonardo_Case7 0.85kHz / 6kHz
-												 [Leonardo_Case8].Freq1 = 24614, [Leonardo_Case8].Freq2 = 13604,		// Leonardo_Case8 3.25kHz / 5.88kHz
-												 [Leonardo_Case9].Freq1 = 24614, [Leonardo_Case9].Freq2 = 88888,		// Leonardo_Case9 3.25kHz / 0.90kHz
+												 [Leonardo_Case8_switching].Freq1 = 24614, [Leonardo_Case8_switching].Freq2 = 13604,		// Leonardo_Case8 3.25kHz / 5.88kHz
+												 [Leonardo_Case9_switching].Freq1 = 24614, [Leonardo_Case9_switching].Freq2 = 88888,		// Leonardo_Case9 3.25kHz / 0.90kHz
 
 												 [Leonardo_Case1].Pulse1 = 1600, [Leonardo_Case1].Pulse2 = 1600,		// 20us
 												 [Leonardo_Case2].Pulse1 = 1600, [Leonardo_Case2].Pulse2 = 1600,
@@ -52,8 +52,8 @@ CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_Case5].Pulse1 = 1600, [Leonardo_Case5].Pulse2 = 1600,
 												 [Leonardo_Case6].Pulse1 = 1600, [Leonardo_Case6].Pulse2 = 1600,
 												 [Leonardo_Case7].Pulse1 = 1600, [Leonardo_Case7].Pulse2 = 1600,
-												 [Leonardo_Case8].Pulse1 = 1600, [Leonardo_Case8].Pulse2 = 1600,
-												 [Leonardo_Case9].Pulse1 = 1600, [Leonardo_Case9].Pulse2 = 1600,
+												 [Leonardo_Case8_switching].Pulse1 = 2000, [Leonardo_Case8_switching].Pulse2 = 240, // 25 / 3
+												 [Leonardo_Case9_switching].Pulse1 = 2000, [Leonardo_Case9_switching].Pulse2 = 3600,// 25 / 45
 
 
 
@@ -75,7 +75,7 @@ CasesTypeDef UncalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_PRF6].Pulse1 = 192, [Leonardo_PRF6].Pulse2 = 192,		// 2.4 us
 												 [Leonardo_PRF7].Pulse1 = 160, [Leonardo_PRF7].Pulse2 = 160,		// 2 us
 												 [Leonardo_PRF8].Pulse1 = 136, [Leonardo_PRF8].Pulse2 = 136,		// 1.7 us
-												 [Leonardo_PRF9].Pulse1 = 16, [Leonardo_PRF9].Pulse2 = 16,		// 0.2 us
+												 [Leonardo_PRF9].Pulse1 = 56, [Leonardo_PRF9].Pulse2 = 56,		// 0.7 us
 
 												 [Leonardo_Duty_12P].Freq1 = 33332, [Leonardo_Duty_12P].Freq2 = 33332,	// Leonardo_Duty_12P
 												 [Leonardo_Duty_15P].Freq1 = 6913, [Leonardo_Duty_15P].Freq2 = 5332,		// Leonardo_Duty_15P
@@ -106,8 +106,8 @@ CasesTypeDef CalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_Case5].Freq1 = 35555, [Leonardo_Case5].Freq2 = 59258,		// Leonardo_Case5 2.25kHz / 1.35kHz
 												 [Leonardo_Case6].Freq1 = 56337, [Leonardo_Case6].Freq2 = 20355,		// Leonardo_Case6 1.42kHz / 3.93kHz
 												 [Leonardo_Case7].Freq1 = 94117, [Leonardo_Case7].Freq2 = 13332,		// Leonardo_Case7 0.85kHz / 6kHz
-												 [Leonardo_Case8].Freq1 = 24614, [Leonardo_Case8].Freq2 = 13604,		// Leonardo_Case8 3.25kHz / 5.88kHz
-												 [Leonardo_Case9].Freq1 = 24614, [Leonardo_Case9].Freq2 = 88888,		// Leonardo_Case9 3.25kHz / 0.90kHz
+												 [Leonardo_Case8_switching].Freq1 = 24614, [Leonardo_Case8_switching].Freq2 = 13604,		// Leonardo_Case8 3.25kHz / 5.88kHz
+												 [Leonardo_Case9_switching].Freq1 = 24614, [Leonardo_Case9_switching].Freq2 = 88888,		// Leonardo_Case9 3.25kHz / 0.90kHz
 
 												 [Leonardo_Case1].Pulse1 = 1600, [Leonardo_Case1].Pulse2 = 1600,		// 20us
 												 [Leonardo_Case2].Pulse1 = 1600, [Leonardo_Case2].Pulse2 = 1600,
@@ -116,8 +116,8 @@ CasesTypeDef CalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_Case5].Pulse1 = 1600, [Leonardo_Case5].Pulse2 = 1600,
 												 [Leonardo_Case6].Pulse1 = 1600, [Leonardo_Case6].Pulse2 = 1600,
 												 [Leonardo_Case7].Pulse1 = 1600, [Leonardo_Case7].Pulse2 = 1600,
-												 [Leonardo_Case8].Pulse1 = 1600, [Leonardo_Case8].Pulse2 = 1600,
-												 [Leonardo_Case9].Pulse1 = 1600, [Leonardo_Case9].Pulse2 = 1600,
+												 [Leonardo_Case8_switching].Pulse1 = 2000, [Leonardo_Case8_switching].Pulse2 = 240, // 25 / 3
+												 [Leonardo_Case9_switching].Pulse1 = 2000, [Leonardo_Case9_switching].Pulse2 = 3600,// 25 / 45
 
 
 
@@ -139,7 +139,7 @@ CasesTypeDef CalibratedCasesLeonardo[NUMBER_OF_CASES] = {
 												 [Leonardo_PRF6].Pulse1 = 192, [Leonardo_PRF6].Pulse2 = 192,		// 2.4 us
 												 [Leonardo_PRF7].Pulse1 = 160, [Leonardo_PRF7].Pulse2 = 160,		// 2 us
 												 [Leonardo_PRF8].Pulse1 = 136, [Leonardo_PRF8].Pulse2 = 136,		// 1.7 us
-												 [Leonardo_PRF9].Pulse1 = 16, [Leonardo_PRF9].Pulse2 = 16,		// 0.2 us
+												 [Leonardo_PRF9].Pulse1 = 56, [Leonardo_PRF9].Pulse2 = 56,		// 0.7 us
 
 												 [Leonardo_Duty_12P].Freq1 = 33332, [Leonardo_Duty_12P].Freq2 = 33332,	// Leonardo_Duty_12P
 												 [Leonardo_Duty_15P].Freq1 = 6913, [Leonardo_Duty_15P].Freq2 = 5332,		// Leonardo_Duty_15P
@@ -184,7 +184,7 @@ void TIM3_IRQHandler(void)
 //	extern UART_HandleTypeDef huart2; 	// debug only
 
 	// cases with varying frequency (interval = 15 pulses)
-	if(CurrentCase >= Leonardo_Case1 && CurrentCase <= Leonardo_Case9)
+	if(CurrentCase >= Leonardo_Case1 && CurrentCase <= Leonardo_Case7)
 	{
 		ScopeTriggerFromISR();
 
@@ -199,6 +199,26 @@ void TIM3_IRQHandler(void)
 			TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;
 		}
 		TIM3->ARR = 14;
+	}
+
+	// cases with varying frequency, varying pulse width and varying pulse count
+	if(CurrentCase >= Leonardo_Case8_switching && CurrentCase <= Leonardo_Case9_switching)
+	{
+		ScopeTriggerFromISR();
+
+		if(TIM2->ARR == CalibratedCasesLeonardo[CurrentCase].Freq1) 	// last active case
+		{
+			TIM2->ARR = CalibratedCasesLeonardo[CurrentCase].Freq2;		// setting for new case
+			TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse2;	//
+			TIM3->ARR = 7;
+		}
+		else
+		{
+			TIM2->ARR = CalibratedCasesLeonardo[CurrentCase].Freq1;
+			TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;
+			TIM3->ARR = 14;
+		}
+
 	}
 
 	// cases with constant frequency and constant pulse

@@ -155,24 +155,24 @@ void OLED_Update_Display_Case(OLEDStates_type State)
 		ssd1306_WriteString("PW= 20 us", Font_7x10, White);
 		break;
 
-	case Leonardo_Case8:
+	case Leonardo_Case8_switching:
 		ssd1306_WriteString("PH 8", Font_16x26, White);
 		ssd1306_SetCursor(0, 29);
 		ssd1306_WriteString("PRF1= 3.250 kHz", Font_7x10, White);
 		ssd1306_SetCursor(0, 41);
 		ssd1306_WriteString("PRF2= 5.880 kHz", Font_7x10, White);
 		ssd1306_SetCursor(0, 53);
-		ssd1306_WriteString("PW= 20 us", Font_7x10, White);
+		ssd1306_WriteString("PW= 25/3 us", Font_7x10, White);
 		break;
 
-	case Leonardo_Case9:
+	case Leonardo_Case9_switching:
 		ssd1306_WriteString("PH 9", Font_16x26, White);
 		ssd1306_SetCursor(0, 29);
 		ssd1306_WriteString("PRF1= 3.250 kHz", Font_7x10, White);
 		ssd1306_SetCursor(0, 41);
 		ssd1306_WriteString("PRF2= 0.900 kHz", Font_7x10, White);
 		ssd1306_SetCursor(0, 53);
-		ssd1306_WriteString("PW= 20 us", Font_7x10, White);
+		ssd1306_WriteString("PW= 25/45 us", Font_7x10, White);
 		break;
 
 
@@ -261,9 +261,9 @@ void OLED_Update_Display_Case(OLEDStates_type State)
 		ssd1306_SetCursor(0, 29);
 		ssd1306_WriteString("PRF= 70 kHz", Font_7x10, White);
 		ssd1306_SetCursor(0, 41);
-		ssd1306_WriteString("PW= 0.2 us", Font_7x10, White);
+		ssd1306_WriteString("PW= 0.7 us", Font_7x10, White);
 		ssd1306_SetCursor(0, 53);
-		ssd1306_WriteString("DUTY= 1.4 %", Font_7x10, White);
+		ssd1306_WriteString("DUTY= 4.9 %", Font_7x10, White);
 		break;
 
 	case Leonardo_Duty_12P:

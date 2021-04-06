@@ -169,13 +169,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	{
 		if(OutputState == OutputON)
 		{
-			TIM2->CNT = 0xFFFFFFFF - 10000;	// set TIM2 PWM to "safe" pulseOFF area
+			TIM2->CNT = 0xFFFFFFFFu - 100000u;	// set TIM2 PWM to "safe" pulseOFF area
 			HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);
 			OutputState = OutputOFF;
 		}
 		else if(OutputState == OutputOFF)
 		{
-			TIM2->CNT = 0xFFFFFFFF - 10000;	// set TIM2 PWM to "safe" pulseOFF area
+			TIM2->CNT = 0xFFFFFFFFu - 100000u;	// set TIM2 PWM to "safe" pulseOFF area
 			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 			OutputState = OutputON;
 		}
@@ -187,7 +187,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	if(GPIO_Pin == GPIO_PIN_6)	// next case button pressed (PC6)
 	{
-		TIM2->CNT = 0xFFFFFFFF - 10000;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 125 us)
+		TIM2->CNT = 0xFFFFFFFFu - 100000u;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 125 us)
 		TIM3->CNT = 0;						// avoid missing timer set point (and overflow) when ARR register is changed
 		NextFrequency();
 		for(int i = 0; i < 100000; i++); 	// about 14 ms debounce
@@ -195,7 +195,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	if(GPIO_Pin == GPIO_PIN_8)				// previous case down button pressed (PC8)
 	{
-		TIM2->CNT = 0xFFFFFFFF - 10000;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 125 us)
+		TIM2->CNT = 0xFFFFFFFFu - 100000u;	// avoid missing timer set point and extra pulse generation by setting CNT just before overflow (outside PWM high area and close to overflow for short delay - about 125 us)
 		TIM3->CNT = 0;							// avoid timer overflow when ARR register is changed
 		PreviousFrequency();
 		for(int i = 0; i < 100000; i++); 	// about 14 ms debounce
