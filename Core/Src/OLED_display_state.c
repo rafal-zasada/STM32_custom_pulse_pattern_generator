@@ -43,7 +43,7 @@ void OLED_Update_Display_Case(OLEDStates_type State)
 	ssd1306_Fill(Black);
 	ssd1306_SetCursor(93, 3);
 
-	if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz)
+	if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz || CurrentCase == Leonardo_TC_1_Single_Shot)
 	{
 		ssd1306_WriteString("TRG", Font_11x18, White);
 	}
@@ -314,6 +314,14 @@ void OLED_Update_Display_Case(OLEDStates_type State)
 		ssd1306_WriteString(StringBuffer, Font_11x18, White);
 		ssd1306_SetCursor(0, 52);
 		ssd1306_WriteString("PRF= 10 kHz", Font_7x10, White);
+		break;
+
+	case Leonardo_TC_1_Single_Shot:
+		ssd1306_WriteString("S 10u", Font_16x26, White);
+		ssd1306_SetCursor(0, 29);
+		ssd1306_WriteString("one shot", Font_11x18, White);
+		ssd1306_SetCursor(0, 52);
+		ssd1306_WriteString("PW= 10 us", Font_7x10, White);
 		break;
 
 	default:

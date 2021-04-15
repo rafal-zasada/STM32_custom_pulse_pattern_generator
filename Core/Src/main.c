@@ -21,6 +21,7 @@
 #include "main.h"
 #include "i2c.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -93,7 +94,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
-	int PreviousNumberOfPulses = 10;
+	int PreviousNumberOfPulses = 2;
 
   /* USER CODE END 1 */
 
@@ -119,6 +120,7 @@ int main(void)
   MX_TIM3_Init();
   MX_I2C3_Init();
   MX_TIM4_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   //snprintf(PC_GUI_message, 200, "System Clock = %lu\n",  SystemCoreClock);					// debug only
@@ -147,7 +149,7 @@ int main(void)
   OLED_Update_Display_Case(OLEDDisplayState); //current case
 
 
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+  // HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1); // now enabled by button after power-up
   HAL_TIM_Base_Start_IT(&htim3);
 
   /* USER CODE END 2 */
@@ -246,7 +248,8 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C3;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_I2C3;
+  PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInit.I2c3ClockSelection = RCC_I2C3CLKSOURCE_PCLK1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {

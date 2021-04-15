@@ -23,8 +23,10 @@
 /* USER CODE BEGIN 0 */
 #include<stdint.h>  // for uint64_t
 #include <stdbool.h>
-#include <calibration.h>
-#include <generator_control.h>
+#include <string.h>
+#include <stdio.h>
+#include "calibration.h"
+#include "generator_control.h"
 #include "gpio.h"
 #include "OLED_display_state.h"
 
@@ -67,9 +69,9 @@ void MX_GPIO_Init(void)
                           |GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
-                          |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8
-                          |GPIO_PIN_9|GPIO_PIN_12|GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
+                          |GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_12
+                          |GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_10
@@ -92,12 +94,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA1 PA2 PA3 PA4
-                           PA5 PA6 PA7 PA8
-                           PA9 PA12 PA15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
-                          |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8
-                          |GPIO_PIN_9|GPIO_PIN_12|GPIO_PIN_15;
+  /*Configure GPIO pins : PA1 PA4 PA5 PA6
+                           PA7 PA8 PA9 PA12
+                           PA15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
+                          |GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_12
+                          |GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -165,7 +167,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		}
 	}
 
-	if(GPIO_Pin == GPIO_PIN_10 && CurrentCase != Leonardo_Burst_18u_10kHz && CurrentCase != Leonardo_Burst_20u_10kHz)	// output ON/OFF button pressed (not used for burst modes)
+	if(GPIO_Pin == GPIO_PIN_10 && CurrentCase != Leonardo_Burst_18u_10kHz && CurrentCase != Leonardo_Burst_20u_10kHz && Leonardo_TC_1_Single_Shot)	// output ON/OFF button pressed (not used for burst modes and single shot)
 	{
 		if(OutputState == OutputON)
 		{
@@ -217,7 +219,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz)
 		{
 			TIM3->CNT = 0;
-
+			TIM2->CNT = 0xFFFFFFFF - 10;
 			TIM2->CCMR1 &= ~TIM_CCMR1_OC1PE; // disable output compare 1 preload to update pulse width immediately
 			TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;
 			TIM2->CCMR1 |= TIM_CCMR1_OC1PE; // re-reable output compare 1 preload
@@ -230,6 +232,31 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			GPIOC->BSRR |= (1u << 20); // reset pin 4
 
 			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+		}
+
+		if(CurrentCase == Leonardo_TC_1_Single_Shot)
+		{
+			TIM3->CNT = 0;
+			TIM2->CNT = 0xFFFFFFFF - 10;
+			TIM2->CCMR1 &= ~TIM_CCMR1_OC1PE; // disable output compare 1 preload to update pulse width immediately
+			TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;
+			TIM2->CCMR1 |= TIM_CCMR1_OC1PE; // re-reable output compare 1 preload
+
+
+			// debug
+			// extern char PC_GUI_message[];
+			// extern UART_HandleTypeDef huart2;
+			// snprintf(PC_GUI_message, 200, " TIM2->CNT= %lu\n", TIM2->CNT);
+			// HAL_UART_Transmit(&huart2, (unsigned char*)PC_GUI_message, strlen(PC_GUI_message) + 1, 100);
+
+			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+			for(int i = 0; i < 200; i++); 	// about 26 us. Make sure this is smaller than TIM2->ARR to get only one pulse
+			HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);
+
+			//scope trigger
+			GPIOC->BSRR |= (1u << 4); // set pin 4
+			for(int i = 0; i < 25; i++); // about 3 us
+			GPIOC->BSRR |= (1u << 20); // reset pin 4
 		}
 	}
 

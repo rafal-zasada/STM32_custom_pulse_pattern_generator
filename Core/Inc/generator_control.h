@@ -18,7 +18,7 @@ typedef struct
 
 #define OutputON 1
 #define OutputOFF 0
-#define NUMBER_OF_CASES 25
+#define NUMBER_OF_CASES 26
 
 void InitPatternGenerator(void);
 void NextFrequency(void);
