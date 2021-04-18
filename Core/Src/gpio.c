@@ -167,7 +167,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		}
 	}
 
-	if(GPIO_Pin == GPIO_PIN_10 && CurrentCase != Leonardo_Burst_18u_10kHz && CurrentCase != Leonardo_Burst_20u_10kHz && Leonardo_TC_1_Single_Shot)	// output ON/OFF button pressed (not used for burst modes and single shot)
+	if(GPIO_Pin == GPIO_PIN_10 && CurrentCase != Leonardo_Burst_18u_10kHz && CurrentCase != Leonardo_Burst_20u_10kHz && CurrentCase != Leonardo_TC_1_Single_Shot)	// output ON/OFF button pressed (not used for burst modes and single shot)
 	{
 		if(OutputState == OutputON)
 		{
@@ -237,6 +237,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		if(CurrentCase == Leonardo_TC_1_Single_Shot)
 		{
 			TIM3->CNT = 0;
+			TIM2->ARR = 79999; // timer should never get to this point
 			TIM2->CNT = 0xFFFFFFFF - 10;
 			TIM2->CCMR1 &= ~TIM_CCMR1_OC1PE; // disable output compare 1 preload to update pulse width immediately
 			TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;
