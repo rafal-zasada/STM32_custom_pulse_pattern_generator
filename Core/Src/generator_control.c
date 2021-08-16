@@ -175,7 +175,7 @@ void TIM3_IRQHandler(void)
 //	char PC_GUI_message[200] = {0};		// debug only
 //	extern UART_HandleTypeDef huart2; 	// debug only
 
-	// cases with varying frequency (interval = 15 pulses)
+	// cases with varying frequency (interval = 16 pulses)
 	if(CurrentCase >= Leonardo_Case1 && CurrentCase <= Leonardo_Case7)
 	{
 		ScopeTriggerFromISR();
@@ -190,7 +190,7 @@ void TIM3_IRQHandler(void)
 			TIM2->ARR = CalibratedCasesLeonardo[CurrentCase].Freq1;
 			TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;
 		}
-		TIM3->ARR = 14;
+		TIM3->ARR = 15;
 	}
 
 	// cases with varying frequency, varying pulse width and varying pulse count
@@ -322,10 +322,10 @@ void NextFrequency(void)
 	if(CurrentCase > NUMBER_OF_CASES - 1)
 		CurrentCase = 0;	// go to the beginning
 
+	// stop PWM for single shot or burst mode
 	if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz || CurrentCase == Leonardo_TC_1_Single_Shot)
 	{
 		GPIOC->BSRR |= (1u << 20); // reset pin 4 (scope trigger)
-
 		TIM2->CNT = 0xFFFFFFFF - 10000;	// safe off pulse area
 		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);	// stop pulse generator. PWM output must be pulled down !
 		//HAL_TIM_Base_Stop(&htim2);	// stop pulse generator - what is the difference?
@@ -342,12 +342,12 @@ void PreviousFrequency(void)
 	if(CurrentCase < 0)
 		CurrentCase = NUMBER_OF_CASES - 1; 		// go to the last one
 
+	// stop PWM for single shot or burst mode
 	if(CurrentCase == Leonardo_Burst_18u_10kHz || CurrentCase == Leonardo_Burst_20u_10kHz || CurrentCase == Leonardo_TC_1_Single_Shot)
 	{
 		GPIOC->BSRR |= (1u << 20); // reset pin 4 (scope trigger)
-
-		TIM2->CNT = 0xFFFFFFFF - 10000;	// safe off pulse area
-		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);	// stop pulse generator. PWM output must be pulled down !
+		TIM2->CNT = 0xFFFFFFFF - 10000;	// safe pulse off area
+		HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);	// stop pulse generator. (PWM output must be pulled down by some other means)!
 		//HAL_TIM_Base_Stop(&htim2);	// stop pulse generator - what is the difference?
 		OutputState = OutputOFF;
 	}
