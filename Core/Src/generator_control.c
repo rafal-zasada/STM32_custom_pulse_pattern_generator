@@ -184,13 +184,14 @@ void TIM3_IRQHandler(void)
 		{
 			TIM2->ARR = CalibratedCasesLeonardo[CurrentCase].Freq2;
 			TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse2;
+			TIM3->ARR = 15;
 		}
 		else
 		{
 			TIM2->ARR = CalibratedCasesLeonardo[CurrentCase].Freq1;
 			TIM2->CCR1 = CalibratedCasesLeonardo[CurrentCase].Pulse1;
+			TIM3->ARR = 15;
 		}
-		TIM3->ARR = 15;
 	}
 
 	// cases with varying frequency, varying pulse width and varying pulse count
